@@ -1,5 +1,23 @@
 # Changelog
 
+## 4.3.1 — 2026-10
+
+### Bảo mật
+- Nâng cấp thư viện có lỗ hổng đã công bố (Dependabot): aiohttp 3.14.4, Pillow 12.3.0, cryptography 50.0.2;
+  gói tuỳ chọn: transformers 5.10.2, sentence-transformers 5.7.0, datasets 5.0.1, yt-dlp 2026.8.19;
+  giao diện Admin (chỉ lúc phát triển): vite 6.4.4.
+- chromadb chưa có bản vá; các lỗ hổng chỉ ảnh hưởng máy chủ HTTP của Chroma, Phidipus Agents dùng
+  `PersistentClient` nhúng nên không bị ảnh hưởng (ghi chú trong `requirements/rag.txt`).
+- `tools/check_secrets.py` quét cả file test để chặn chuỗi có định dạng khoá thật (kể cả khoá giả).
+
+### Sửa lỗi
+- Telegram: `telegram.telegram_config` luôn import được, bất kể bot được nạp trước hay sau.
+- Mã nguồn giao diện Admin build lại được (thẻ `</template>` thừa trong `AILabView.vue`).
+
+### Đóng góp
+- CONTRIBUTING viết lại; mẫu issue (báo lỗi, đề xuất, phím tắt, hỏi đáp) và mẫu pull request có CLA.
+- `tools/try_command.py`: chạy thử một lệnh với danh mục phím tắt, không cần quyền macOS.
+
 ## 4.3.0 — 2026-10
 
 ### Bảo mật

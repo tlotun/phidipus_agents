@@ -666,4 +666,3 @@ const sections = [
   .arch-arrow { transform: rotate(90deg); }
 }
 </style>
-</template>

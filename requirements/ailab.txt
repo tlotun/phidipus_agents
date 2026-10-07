@@ -1,6 +1,6 @@
 # Optional AI Lab / training pipeline (large: pulls PyTorch through whisper)
 anthropic==0.89.0
-datasets==4.8.4
-yt-dlp==2026.3.17
-sentence-transformers==5.3.0
+datasets==5.0.1
+yt-dlp==2026.8.19
+sentence-transformers==5.7.0
 openai-whisper==20250625

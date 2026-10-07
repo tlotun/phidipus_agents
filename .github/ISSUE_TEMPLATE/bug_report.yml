@@ -53,7 +53,7 @@ body:
     attributes:
       label: Phiên bản Phidipus Agents / Version
       description: Hiện khi khởi động, hoặc xem mục đầu của CHANGELOG.md
-      placeholder: "4.3.0"
+      placeholder: "4.3.1"
     validations:
       required: true
   - type: input
