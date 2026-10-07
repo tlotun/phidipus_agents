@@ -1,0 +1,132 @@
+{
+  "id": "wf_messenger_care",
+  "brain_name": "cham_soc_messenger",
+  "name": "💬 Chăm sóc khách qua Messenger",
+  "trigger_phrases": [
+    "nhắn tin khách",
+    "messenger khách hàng",
+    "chăm sóc khách messenger"
+  ],
+  "nodes": [
+    {
+      "id": "n_1",
+      "type": "trigger",
+      "x": 60,
+      "y": 40,
+      "config": {
+        "phrases": [
+          "nhắn tin khách",
+          "messenger khách hàng",
+          "chăm sóc khách messenger"
+        ],
+        "description": "AI soạn tin → mở Messenger → gửi tin chăm sóc"
+      },
+      "next": [
+        "n_2"
+      ]
+    },
+    {
+      "id": "n_2",
+      "type": "ai_process",
+      "x": 60,
+      "y": 130,
+      "config": {
+        "action": "custom_prompt",
+        "model": "auto",
+        "prompt": "Soạn tin nhắn Messenger chăm sóc khách hàng:\nTên khách: {{customer_name}}\nSản phẩm đã mua: {{product}}\nNgày mua: {{purchase_date}}\n\nYêu cầu: Thân thiện, hỏi thăm trải nghiệm, gợi ý sản phẩm liên quan, ngắn gọn 3-4 câu.",
+        "input_from": "none",
+        "language": "vi",
+        "max_tokens": 200,
+        "save_result": true
+      },
+      "next": [
+        "n_3"
+      ]
+    },
+    {
+      "id": "n_3",
+      "type": "chrome",
+      "x": 60,
+      "y": 220,
+      "config": {
+        "action": "navigate",
+        "url": "https://www.messenger.com/t/{{customer_messenger_id}}",
+        "wait_after": 3
+      },
+      "next": [
+        "n_4"
+      ]
+    },
+    {
+      "id": "n_4",
+      "type": "wait",
+      "x": 60,
+      "y": 310,
+      "config": {
+        "seconds": 3,
+        "wait_for_selector": "[role=textbox]",
+        "timeout": 15
+      },
+      "next": [
+        "n_5"
+      ]
+    },
+    {
+      "id": "n_5",
+      "type": "vision_click",
+      "x": 60,
+      "y": 400,
+      "config": {
+        "description": "Ô nhập tin nhắn Messenger",
+        "domain": "messenger.com",
+        "action_key": "messenger_input",
+        "retry": 2,
+        "wait_after": 1
+      },
+      "next": [
+        "n_6"
+      ]
+    },
+    {
+      "id": "n_6",
+      "type": "type_text",
+      "x": 60,
+      "y": 490,
+      "config": {
+        "text": "{{result}}",
+        "use_clipboard": true
+      },
+      "next": [
+        "n_7"
+      ]
+    },
+    {
+      "id": "n_7",
+      "type": "vision_click",
+      "x": 60,
+      "y": 580,
+      "config": {
+        "description": "Nút gửi tin nhắn (icon mũi tên hoặc nút Send)",
+        "domain": "messenger.com",
+        "action_key": "messenger_send",
+        "retry": 1,
+        "wait_after": 2
+      },
+      "next": [
+        "n_8"
+      ]
+    },
+    {
+      "id": "n_8",
+      "type": "notify",
+      "x": 60,
+      "y": 670,
+      "config": {
+        "message": "💬 Đã gửi tin chăm sóc cho {{customer_name}} qua Messenger!"
+      },
+      "next": []
+    }
+  ],
+  "created": "2026-03-26T01:07:07.568654",
+  "active": true
+}

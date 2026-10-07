@@ -1,0 +1,4 @@
+# Brain v7 (fine-tuned Qwen3.5-4B, MLX) — Apple Silicon only
+mlx==0.31.1 ; sys_platform == "darwin" and platform_machine == "arm64"
+mlx-lm==0.31.1 ; sys_platform == "darwin" and platform_machine == "arm64"
+huggingface_hub==1.9.0

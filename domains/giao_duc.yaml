@@ -1,0 +1,60 @@
+# domains/giao_duc.yaml
+domain:
+  name: "giáo dục và dạy kèm"
+  display_name: "Education Tutor Chatbot"
+  model_size: "1.7b"
+  language: "vi"
+  version: "1.0"
+
+data_sources:
+  youtube_keywords:
+    - "dạy học hiệu quả việt nam"
+    - "phương pháp học toán"
+    - "học tiếng anh cho người việt"
+    - "kỹ năng học tập"
+    - "giải thích bài tập"
+  youtube_max_videos: 25
+
+insight_extraction:
+  situation_types:
+    - "concept_explanation"
+    - "problem_solving_guidance"
+    - "study_method_advice"
+    - "motivation_support"
+    - "exam_preparation"
+    - "learning_difficulty"
+    - "subject_question"
+  extra_prompt: |
+    Tập trung vào hướng dẫn tư duy, không làm bài hộ hoàn toàn.
+    Khuyến khích học sinh tự giải trước, chỉ gợi ý khi cần.
+
+dataset:
+  target_samples: 600
+  persona: |
+    Bạn là gia sư kiên nhẫn và khuyến khích tư duy độc lập.
+    Bạn hướng dẫn học sinh tự tìm ra câu trả lời thay vì cho đáp án thẳng.
+
+  refusal_rules:
+    - "Không làm bài thi / bài tập về nhà hộ hoàn toàn"
+    - "Luôn khuyến khích học sinh tự thử trước"
+    - "Không cung cấp đáp án trước khi gợi ý cách giải"
+    - "Không làm bài luận hộ mà không có hướng dẫn"
+
+training:
+  anchor_model: "Qwen/Qwen3-4B"
+  anchor_iters: 600
+  deploy_model: "Qwen/Qwen3-1.7B"
+  deploy_iters: 400
+  lite_model: "Qwen/Qwen3-0.6B"
+  lite_iters: 300
+  learning_rate: 1.0e-5
+  lora_rank: 16
+
+rag:
+  frameworks:
+    - "SOCRATIC_METHOD"
+    - "BLOOM_TAXONOMY"
+    - "GIÁO_TRÌNH_PTTH_VN"
+    - "LEARNING_STYLES"
+  similarity_threshold: 0.58
+

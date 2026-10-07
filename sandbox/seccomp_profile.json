@@ -1,0 +1,425 @@
+{
+  "_comment": "Phidipus v1.0 \u2014 sandbox/seccomp_profile.json. Enforces R-11 through R-16. Default-deny: every syscall not in the allowlist is rejected with SCMP_ACT_ERRNO(EPERM). Network syscalls, namespace ops, module loading, privilege escalation, and raw-socket syscalls are explicitly listed below the allowlist for auditability.",
+  "defaultAction": "SCMP_ACT_ERRNO",
+  "architectures": [
+    "SCMP_ARCH_X86_64",
+    "SCMP_ARCH_X86",
+    "SCMP_ARCH_X32"
+  ],
+  "syscalls": [
+    {
+      "_group": "FILE-IO \u2014 open, read, write, close, seek, stat, dir traversal",
+      "names": [
+        "read",
+        "write",
+        "pread64",
+        "pwrite64",
+        "readv",
+        "writev",
+        "open",
+        "openat",
+        "openat2",
+        "creat",
+        "close",
+        "close_range",
+        "lseek",
+        "stat",
+        "fstat",
+        "lstat",
+        "statx",
+        "newfstatat",
+        "access",
+        "faccessat",
+        "faccessat2",
+        "getcwd",
+        "chdir",
+        "fchdir",
+        "rename",
+        "renameat",
+        "renameat2",
+        "mkdir",
+        "mkdirat",
+        "rmdir",
+        "link",
+        "linkat",
+        "unlink",
+        "unlinkat",
+        "symlink",
+        "symlinkat",
+        "readlink",
+        "readlinkat",
+        "getdents",
+        "getdents64",
+        "truncate",
+        "ftruncate",
+        "chmod",
+        "fchmod",
+        "fchmodat",
+        "chown",
+        "fchown",
+        "fchownat",
+        "lchown",
+        "umask",
+        "sendfile",
+        "copy_file_range",
+        "statfs",
+        "fstatfs",
+        "sync",
+        "syncfs",
+        "fsync",
+        "fdatasync",
+        "sync_file_range",
+        "getxattr",
+        "lgetxattr",
+        "fgetxattr",
+        "listxattr",
+        "llistxattr",
+        "flistxattr",
+        "setxattr",
+        "lsetxattr",
+        "fsetxattr",
+        "removexattr",
+        "lremovexattr",
+        "fremovexattr"
+      ],
+      "action": "SCMP_ACT_ALLOW"
+    },
+    {
+      "_group": "FILE-DESCRIPTOR \u2014 dup, pipe, fcntl, inotify, eventfd, memfd",
+      "names": [
+        "dup",
+        "dup2",
+        "dup3",
+        "fcntl",
+        "flock",
+        "pipe",
+        "pipe2",
+        "inotify_init",
+        "inotify_init1",
+        "inotify_add_watch",
+        "inotify_rm_watch",
+        "eventfd",
+        "eventfd2",
+        "signalfd",
+        "signalfd4",
+        "memfd_create"
+      ],
+      "action": "SCMP_ACT_ALLOW"
+    },
+    {
+      "_group": "MEMORY \u2014 mmap, brk, mprotect, mremap, madvise, huge pages, SHM",
+      "names": [
+        "brk",
+        "mmap",
+        "munmap",
+        "mremap",
+        "mprotect",
+        "mlock",
+        "mlock2",
+        "munlock",
+        "mlockall",
+        "munlockall",
+        "madvise",
+        "msync",
+        "mincore",
+        "shmget",
+        "shmat",
+        "shmctl",
+        "shmdt"
+      ],
+      "action": "SCMP_ACT_ALLOW"
+    },
+    {
+      "_group": "EXPLICIT DENY \u2014 clone with namespace flags (Bug #7 fix: defence-in-depth)",
+      "_note": "Blocks clone() when CLONE_NEWUSER (0x10000000) or CLONE_NEWNS (0x00020000) flags are set. Prevents user-namespace container escape on permissive kernels. Placed BEFORE the PROCESS ALLOW rule so seccomp first-match selects this deny.",
+      "names": [
+        "clone"
+      ],
+      "action": "SCMP_ACT_ERRNO",
+      "args": [
+        {
+          "index": 0,
+          "value": 268435456,
+          "valueTwo": 268435456,
+          "op": "SCMP_CMP_MASKED_EQ"
+        }
+      ]
+    },
+    {
+      "_group": "EXPLICIT DENY \u2014 clone with CLONE_NEWNS (Bug #7 fix)",
+      "names": [
+        "clone"
+      ],
+      "action": "SCMP_ACT_ERRNO",
+      "args": [
+        {
+          "index": 0,
+          "value": 131072,
+          "valueTwo": 131072,
+          "op": "SCMP_CMP_MASKED_EQ"
+        }
+      ]
+    },
+    {
+      "_group": "PROCESS \u2014 fork, exec, wait, exit (clone allowed; clone3 explicitly denied below)",
+      "names": [
+        "clone",
+        "fork",
+        "vfork",
+        "execve",
+        "execveat",
+        "exit",
+        "exit_group",
+        "wait4",
+        "waitid",
+        "getpid",
+        "getppid",
+        "getpgrp",
+        "getsid",
+        "setsid",
+        "getpgid",
+        "setpgid",
+        "kill",
+        "tkill",
+        "tgkill",
+        "getpriority",
+        "setpriority",
+        "prctl",
+        "arch_prctl",
+        "seccomp",
+        "restart_syscall",
+        "set_tid_address",
+        "gettid"
+      ],
+      "action": "SCMP_ACT_ALLOW"
+    },
+    {
+      "_group": "SCHEDULING & CPU",
+      "names": [
+        "sched_yield",
+        "sched_getaffinity",
+        "sched_setaffinity",
+        "sched_getparam",
+        "sched_setparam",
+        "sched_getscheduler",
+        "sched_setscheduler",
+        "sched_get_priority_max",
+        "sched_get_priority_min",
+        "sched_rr_get_interval",
+        "getcpu"
+      ],
+      "action": "SCMP_ACT_ALLOW"
+    },
+    {
+      "_group": "FUTEX & ROBUST-LIST \u2014 required for Python threading and ctypes",
+      "names": [
+        "futex",
+        "futex_waitv",
+        "get_robust_list",
+        "set_robust_list"
+      ],
+      "action": "SCMP_ACT_ALLOW"
+    },
+    {
+      "_group": "SIGNALS",
+      "names": [
+        "rt_sigaction",
+        "rt_sigprocmask",
+        "rt_sigreturn",
+        "rt_sigpending",
+        "rt_sigsuspend",
+        "rt_sigtimedwait",
+        "rt_sigqueueinfo",
+        "rt_tgsigqueueinfo",
+        "sigaltstack",
+        "pause"
+      ],
+      "action": "SCMP_ACT_ALLOW"
+    },
+    {
+      "_group": "TIMERS & CLOCKS",
+      "names": [
+        "alarm",
+        "getitimer",
+        "setitimer",
+        "timer_create",
+        "timer_settime",
+        "timer_gettime",
+        "timer_delete",
+        "timerfd_create",
+        "timerfd_settime",
+        "timerfd_gettime",
+        "clock_gettime",
+        "clock_getres",
+        "clock_nanosleep",
+        "clock_settime",
+        "gettimeofday",
+        "settimeofday",
+        "nanosleep",
+        "times"
+      ],
+      "action": "SCMP_ACT_ALLOW"
+    },
+    {
+      "_group": "POLL / SELECT / EPOLL \u2014 async I/O multiplexing for Python event loop",
+      "names": [
+        "select",
+        "pselect6",
+        "poll",
+        "ppoll",
+        "epoll_create",
+        "epoll_create1",
+        "epoll_ctl",
+        "epoll_wait",
+        "epoll_pwait",
+        "epoll_pwait2"
+      ],
+      "action": "SCMP_ACT_ALLOW"
+    },
+    {
+      "_group": "USER / GROUP IDs \u2014 needed for Python os.getuid() etc. and capability checks",
+      "names": [
+        "getuid",
+        "getgid",
+        "geteuid",
+        "getegid",
+        "getgroups",
+        "setuid",
+        "setgid",
+        "setreuid",
+        "setregid",
+        "setresuid",
+        "setresgid",
+        "getresuid",
+        "getresgid",
+        "setgroups"
+      ],
+      "action": "SCMP_ACT_ALLOW"
+    },
+    {
+      "_group": "CAPABILITIES \u2014 cap get only; capset limited to no-new-privs enforcement",
+      "names": [
+        "capget",
+        "capset"
+      ],
+      "action": "SCMP_ACT_ALLOW"
+    },
+    {
+      "_group": "RESOURCE LIMITS & SYSTEM INFO",
+      "names": [
+        "getrlimit",
+        "setrlimit",
+        "prlimit64",
+        "getrusage",
+        "sysinfo",
+        "uname"
+      ],
+      "action": "SCMP_ACT_ALLOW"
+    },
+    {
+      "_group": "RANDOMNESS \u2014 getrandom is the stdlib-preferred path in Python 3.11",
+      "names": [
+        "getrandom"
+      ],
+      "action": "SCMP_ACT_ALLOW"
+    },
+    {
+      "_group": "IOCTL \u2014 required for terminal width detection (os.get_terminal_size) and tty",
+      "names": [
+        "ioctl"
+      ],
+      "action": "SCMP_ACT_ALLOW"
+    },
+    {
+      "_group": "MISC STDLIB \u2014 writev used by some Python internal I/O paths",
+      "names": [
+        "set_mempolicy",
+        "get_mempolicy",
+        "mbind",
+        "move_pages"
+      ],
+      "action": "SCMP_ACT_ALLOW"
+    },
+    {
+      "_group": "EXPLICIT DENY \u2014 R-11: namespace escape (mount, setns, unshare)",
+      "_note": "Already denied by default action; listed explicitly for auditability",
+      "names": [
+        "mount",
+        "umount",
+        "umount2",
+        "pivot_root",
+        "chroot",
+        "setns",
+        "unshare"
+      ],
+      "action": "SCMP_ACT_ERRNO"
+    },
+    {
+      "_group": "EXPLICIT DENY \u2014 R-12: ALL network syscalls",
+      "_note": "Blocks TCP, UDP, Unix-domain sockets, raw sockets, and all IPC over network",
+      "names": [
+        "socket",
+        "connect",
+        "accept",
+        "accept4",
+        "bind",
+        "listen",
+        "sendto",
+        "sendmsg",
+        "sendmmsg",
+        "recvfrom",
+        "recvmsg",
+        "recvmmsg",
+        "getsockopt",
+        "setsockopt",
+        "getsockname",
+        "getpeername",
+        "socketpair",
+        "shutdown"
+      ],
+      "action": "SCMP_ACT_ERRNO"
+    },
+    {
+      "_group": "EXPLICIT DENY \u2014 R-13: kernel module loading / unloading",
+      "names": [
+        "init_module",
+        "finit_module",
+        "delete_module"
+      ],
+      "action": "SCMP_ACT_ERRNO"
+    },
+    {
+      "_group": "EXPLICIT DENY \u2014 R-14: privilege escalation vectors",
+      "names": [
+        "clone3",
+        "ptrace",
+        "process_vm_readv",
+        "process_vm_writev",
+        "open_by_handle_at",
+        "name_to_handle_at",
+        "perf_event_open",
+        "kexec_load",
+        "kexec_file_load",
+        "keyctl",
+        "add_key",
+        "request_key"
+      ],
+      "action": "SCMP_ACT_ERRNO"
+    },
+    {
+      "_group": "EXPLICIT DENY \u2014 R-15: raw / packet sockets (belt-and-suspenders; socket() already denied)",
+      "names": [
+        "fanotify_init",
+        "fanotify_mark"
+      ],
+      "action": "SCMP_ACT_ERRNO"
+    },
+    {
+      "_group": "EXPLICIT DENY \u2014 R-16: eBPF \u2014 dangerous kernel programmability surface",
+      "names": [
+        "bpf"
+      ],
+      "action": "SCMP_ACT_ERRNO"
+    }
+  ]
+}

@@ -1,0 +1,18 @@
+Phidipus Agents
+Copyright (c) 2026 Phidipus Agents — owner of https://github.com/tlotun/phidipus_agents
+(contact: phidipuscom@gmail.com).
+
+This product is licensed under the PolyForm Noncommercial License 1.0.0
+(see LICENSE); commercial licenses: COMMERCIAL.md; trademarks: TRADEMARKS.md.
+
+Third-party components (each under its own license):
+  * Python packages listed in requirements*.txt — installed from PyPI under
+    their respective licenses (MIT, BSD, Apache-2.0, LGPL, …).
+  * Vue.js and axios (MIT) are loaded by the admin panel from cdnjs.
+  * Brain v7 base model: Qwen/Qwen3.5-4B by the Qwen team, Apache License 2.0,
+    converted to 4-bit MLX format. The Phidipus Agents LoRA adapter and training
+    data are proprietary and are NOT covered by the noncommercial license
+    grant unless distributed together with this notice.
+  * Local AI models are downloaded at install time through Ollama and remain
+    under their own licenses (e.g. Qwen: Apache-2.0; Gemma: Gemma Terms of
+    Use). Users must comply with those terms.

@@ -1,0 +1,117 @@
+{
+  "id": "wf_weekly_backup",
+  "brain_name": "backup_file",
+  "name": "💾 Backup file quan trọng",
+  "trigger_phrases": [
+    "backup file",
+    "sao lưu file",
+    "backup hàng tuần",
+    "weekly backup"
+  ],
+  "nodes": [
+    {
+      "id": "n_1",
+      "type": "trigger",
+      "x": 60,
+      "y": 40,
+      "config": {
+        "phrases": [
+          "backup file",
+          "sao lưu file",
+          "backup hàng tuần"
+        ],
+        "description": "Tìm file quan trọng → copy vào Backup → nén zip → thống kê"
+      },
+      "next": [
+        "n_2"
+      ]
+    },
+    {
+      "id": "n_2",
+      "type": "file",
+      "x": 60,
+      "y": 130,
+      "config": {
+        "action": "find",
+        "path": "~/Documents",
+        "pattern": "*.docx,*.xlsx,*.pdf,*.pptx",
+        "destination": ""
+      },
+      "next": [
+        "n_3"
+      ]
+    },
+    {
+      "id": "n_3",
+      "type": "file",
+      "x": 60,
+      "y": 220,
+      "config": {
+        "action": "copy",
+        "path": "~/Documents",
+        "pattern": "*.docx,*.xlsx,*.pdf,*.pptx",
+        "destination": "~/Desktop/Backup_{{date}}"
+      },
+      "next": [
+        "n_4"
+      ]
+    },
+    {
+      "id": "n_4",
+      "type": "terminal",
+      "x": 60,
+      "y": 310,
+      "config": {
+        "command": "cd ~/Desktop && zip -r Backup_{{date}}.zip Backup_{{date}}/ 2>/dev/null && echo 'Zipped OK'",
+        "cwd": "~",
+        "timeout": 60
+      },
+      "next": [
+        "n_5"
+      ]
+    },
+    {
+      "id": "n_5",
+      "type": "terminal",
+      "x": 60,
+      "y": 400,
+      "config": {
+        "command": "ls -lh ~/Desktop/Backup_{{date}}.zip && echo '---' && find ~/Desktop/Backup_{{date}}/ -type f | wc -l && echo 'files'",
+        "cwd": "~",
+        "timeout": 10
+      },
+      "next": [
+        "n_6"
+      ]
+    },
+    {
+      "id": "n_6",
+      "type": "ai_process",
+      "x": 60,
+      "y": 490,
+      "config": {
+        "action": "summarize",
+        "model": "auto",
+        "prompt": "Tóm tắt kết quả backup:\n{{result}}\nBao gồm: kích thước file zip, số file đã backup, loại file.",
+        "input_from": "previous",
+        "language": "vi",
+        "max_tokens": 200
+      },
+      "next": [
+        "n_7"
+      ]
+    },
+    {
+      "id": "n_7",
+      "type": "notify",
+      "x": 60,
+      "y": 580,
+      "config": {
+        "message": "💾 BACKUP HOÀN TẤT!\n\n{{result}}"
+      },
+      "next": []
+    }
+  ],
+  "created": "2026-03-26T01:07:07.568175",
+  "active": true
+}

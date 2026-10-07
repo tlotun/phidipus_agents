@@ -1,0 +1,99 @@
+name: 🐞 Báo lỗi / Bug report
+description: Phidipus Agents làm sai, báo lỗi hoặc bị treo
+title: "[Lỗi] "
+labels: ["bug"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Cảm ơn bạn đã báo lỗi! Điền càng rõ, lỗi càng được sửa nhanh.
+        **Lỗ hổng bảo mật:** đừng báo ở đây — xem [chính sách bảo mật](https://github.com/tlotun/phidipus_agents/security/policy).
+  - type: textarea
+    id: what-happened
+    attributes:
+      label: Chuyện gì đã xảy ra? / What happened?
+      description: Mô tả lỗi; kèm ảnh chụp màn hình nếu có (nhớ che thông tin cá nhân).
+    validations:
+      required: true
+  - type: textarea
+    id: steps
+    attributes:
+      label: Các bước tái hiện / Steps to reproduce
+      value: |
+        1. Mở ứng dụng …
+        2. Gửi lệnh "…" qua Telegram / Admin Panel
+        3. …
+    validations:
+      required: true
+  - type: textarea
+    id: expected
+    attributes:
+      label: Kết quả mong đợi / Expected behavior
+    validations:
+      required: true
+  - type: dropdown
+    id: area
+    attributes:
+      label: Phần bị lỗi / Area
+      multiple: true
+      options:
+        - Keyboard-first (phím tắt, menu, macro)
+        - Memory Agent (bộ nhớ)
+        - Telegram bot
+        - Admin Panel
+        - Workflow
+        - Nhìn màn hình / click (vision)
+        - Model AI / Ollama
+        - Trình cài đặt / gỡ cài đặt
+        - Khác / Other
+    validations:
+      required: true
+  - type: input
+    id: version
+    attributes:
+      label: Phiên bản Phidipus Agents / Version
+      description: Hiện khi khởi động, hoặc xem mục đầu của CHANGELOG.md
+      placeholder: "4.3.0"
+    validations:
+      required: true
+  - type: input
+    id: mac
+    attributes:
+      label: macOS · chip · RAM
+      placeholder: "macOS 15.4 · Apple M2 · 16 GB"
+    validations:
+      required: true
+  - type: dropdown
+    id: install
+    attributes:
+      label: Cách cài đặt / Install method
+      options:
+        - Lệnh curl một dòng
+        - Tải ZIP + Cai_Dat_Phidipus.command
+        - Gói .pkg
+        - git clone (người phát triển)
+    validations:
+      required: true
+  - type: textarea
+    id: doctor
+    attributes:
+      label: Kết quả kiểm tra sức khoẻ / Doctor output
+      description: |
+        Trong thư mục cài đặt (cài bằng lệnh curl: `~/Applications/Phidipus`), chạy
+        `./venv/bin/python installer/setup_phidipus.py --doctor` rồi dán kết quả.
+      render: text
+  - type: textarea
+    id: logs
+    attributes:
+      label: Log liên quan / Relevant logs
+      description: Đoạn log quanh thời điểm lỗi (thư mục `logs/`). **Xoá token, API key, mật khẩu, số điện thoại, email trước khi dán.**
+      render: text
+  - type: checkboxes
+    id: checks
+    attributes:
+      label: Xác nhận / Checklist
+      options:
+        - label: Tôi đã tìm trong các issue cũ và chưa thấy lỗi này. / I searched the existing issues.
+          required: true
+        - label: Tôi đã xoá token, API key, mật khẩu và dữ liệu cá nhân khỏi nội dung trên. / I removed secrets and personal data.
+          required: true

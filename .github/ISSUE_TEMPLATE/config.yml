@@ -1,0 +1,8 @@
+blank_issues_enabled: false
+contact_links:
+  - name: 🔒 Báo lỗ hổng bảo mật / Report a vulnerability
+    url: https://github.com/tlotun/phidipus_agents/security/policy
+    about: Báo riêng cho chủ dự án — đừng mở issue công khai.
+  - name: 💼 Giấy phép thương mại / Commercial license
+    url: https://github.com/tlotun/phidipus_agents/blob/main/COMMERCIAL.md
+    about: Dùng Phidipus Agents trong công ty hoặc sản phẩm có thu phí.

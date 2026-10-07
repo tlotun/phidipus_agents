@@ -1,0 +1,115 @@
+{
+  "id": "wf_inventory_check",
+  "brain_name": "kiem_tra_ton_kho",
+  "name": "📦 Kiểm tra tồn kho",
+  "trigger_phrases": [
+    "kiểm tra tồn kho",
+    "check inventory",
+    "hàng tồn",
+    "stock check"
+  ],
+  "nodes": [
+    {
+      "id": "n_1",
+      "type": "trigger",
+      "x": 60,
+      "y": 40,
+      "config": {
+        "phrases": [
+          "kiểm tra tồn kho",
+          "check inventory",
+          "hàng tồn",
+          "stock check"
+        ],
+        "description": "Vào trang quản lý → đọc số liệu tồn kho → cảnh báo hết hàng"
+      },
+      "next": [
+        "n_2"
+      ]
+    },
+    {
+      "id": "n_2",
+      "type": "chrome",
+      "x": 60,
+      "y": 130,
+      "config": {
+        "action": "navigate",
+        "url": "{{inventory_url}}",
+        "wait_after": 3
+      },
+      "next": [
+        "n_3"
+      ]
+    },
+    {
+      "id": "n_3",
+      "type": "wait",
+      "x": 60,
+      "y": 220,
+      "config": {
+        "seconds": 3,
+        "timeout": 15
+      },
+      "next": [
+        "n_4"
+      ]
+    },
+    {
+      "id": "n_4",
+      "type": "chrome",
+      "x": 60,
+      "y": 310,
+      "config": {
+        "action": "get_text"
+      },
+      "next": [
+        "n_5"
+      ]
+    },
+    {
+      "id": "n_5",
+      "type": "ai_process",
+      "x": 60,
+      "y": 400,
+      "config": {
+        "action": "custom_prompt",
+        "model": "auto",
+        "prompt": "Phân tích dữ liệu tồn kho sau:\n\n{{result}}\n\nTrả lời:\n1. Sản phẩm SẮP HẾT (tồn < 10): 🔴 liệt kê\n2. Sản phẩm CẦN NHẬP (tồn < 50): 🟡 liệt kê\n3. Sản phẩm ĐỦ: 🟢 tổng số\n4. Đề xuất nhập hàng gấp (nếu có)",
+        "input_from": "previous",
+        "language": "vi",
+        "max_tokens": 500,
+        "save_result": true
+      },
+      "next": [
+        "n_6"
+      ]
+    },
+    {
+      "id": "n_6",
+      "type": "create_document",
+      "x": 60,
+      "y": 490,
+      "config": {
+        "format": "xlsx",
+        "title": "Tồn kho {{date}}",
+        "ai_structure": true,
+        "send_telegram": true
+      },
+      "next": [
+        "n_7"
+      ]
+    },
+    {
+      "id": "n_7",
+      "type": "notify",
+      "x": 60,
+      "y": 580,
+      "config": {
+        "message": "📦 BÁO CÁO TỒN KHO:\n\n{{result}}"
+      },
+      "next": []
+    }
+  ],
+  "created": "2026-03-26T01:07:07.568422",
+  "active": true
+}

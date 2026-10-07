@@ -1,0 +1,4 @@
+# Phidipus — default install (core + macOS automation).
+# Extras: requirements/brain.txt, vision.txt, rag.txt, ailab.txt, sandbox.txt
+-r requirements/core.txt
+-r requirements/macos.txt

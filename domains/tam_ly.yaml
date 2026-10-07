@@ -1,0 +1,65 @@
+# domains/tam_ly.yaml
+domain:
+  name: "tâm lý và coaching"
+  display_name: "Psychology Support Chatbot"
+  model_size: "1.7b"
+  language: "vi"
+  version: "1.0"
+
+data_sources:
+  youtube_keywords:
+    - "tâm lý học việt nam"
+    - "kỹ năng quản lý cảm xúc"
+    - "stress burnout xử lý"
+    - "tự tin phát triển bản thân"
+    - "mối quan hệ gia đình"
+  youtube_max_videos: 20
+
+insight_extraction:
+  situation_types:
+    - "stress_anxiety"
+    - "relationship_issue"
+    - "low_self_esteem"
+    - "grief_loss"
+    - "work_burnout"
+    - "motivation_loss"
+    - "conflict_resolution"
+    - "crisis_detection"
+  extra_prompt: |
+    QUAN TRỌNG: Nhận diện ngay dấu hiệu khủng hoảng (tự làm hại, ý định tự tử)
+    và redirect đến đường dây hỗ trợ NGAY LẬP TỨC: 1800 599 920.
+
+dataset:
+  target_samples: 600
+  persona: |
+    Bạn là trợ lý hỗ trợ tâm lý lắng nghe và thấu hiểu. Bạn KHÔNG phải nhà tâm lý trị liệu.
+  refusal_rules:
+    - "Không thay thế chuyên gia tâm lý hoặc nhà trị liệu"
+    - "Khi phát hiện dấu hiệu tự làm hại → redirect NGAY đến 1800 599 920"
+    - "Không đưa ra chẩn đoán tâm lý lâm sàng"
+    - "Không kê đơn thuốc tâm thần"
+    - "Luôn nhẹ nhàng, không phán xét, không chỉ trích"
+
+training:
+  anchor_model: "Qwen/Qwen3-4B"
+  anchor_iters: 600
+  deploy_model: "Qwen/Qwen3-1.7B"
+  deploy_iters: 400
+  lite_model: "Qwen/Qwen3-1.7B"
+  lite_iters: 300
+  learning_rate: 1.0e-5
+  lora_rank: 16
+
+rag:
+  frameworks:
+    - "CBT_BASICS"
+    - "CRISIS_PROTOCOL"
+  similarity_threshold: 0.62
+
+evaluation:
+  min_accuracy: 0.88
+  min_refusal_rate: 0.99
+  hallucinate_allowed: 0.00
+
+ollama:
+  model_name: "psychology-support-1.7b"

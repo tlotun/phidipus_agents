@@ -1,0 +1,61 @@
+# ── Python / tooling ───────────────────────────────────────────────
+venv
+venv.broken.*
+.venv
+__pycache__/
+*.py[cod]
+.tools/
+dist/
+build/
+*.egg-info/
+.pytest_cache/
+
+# ── Secrets & personal configuration (publish the *.example files) ─
+config.yaml
+keys/
+*.priv
+*.key
+*.pem
+.env
+.env.*
+telegram/bot_config.json
+wechat/wechat_config.json
+
+# ── Runtime data: memory, knowledge, audit log, caches, schedules ──
+data/*
+!data/workflows/
+data/workflows/scheduled/
+!data/shortcuts/
+logs/
+*.log
+*.log.lock
+conversation_logs/
+.phidipus_state.json
+
+# ── Models & private training data (downloaded / kept separately) ──
+models/
+adapters_v7/
+training_data_v*/
+raw_corpus/
+corpus/
+insights/
+
+# ── Local backups / editor / OS ────────────────────────────────────
+.backup/
+.claude/
+.DS_Store
+.idea/
+.vscode/
+
+# ── Owner-only tools (not part of the release) ─────────────────────
+Dua_Len_GitHub.command
+Lam_Video_Demo.command
+
+# ── Owner-private files (kept on this Mac, never published) ────────
+Phidipus_v4_TaiLieu_TiengViet.docx
+lora_config_mlx.yaml
+scripts/generate_training_data.py
+scripts/augment_training_data.py
+scripts/augment_training_data_v2.py
+scripts/phase1_complete.py
+scripts/evaluate_brain.py

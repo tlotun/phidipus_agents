@@ -1,0 +1,99 @@
+{
+  "id": "wf_kpi_dashboard",
+  "brain_name": "kpi_dashboard",
+  "name": "📈 Chụp & phân tích KPI Dashboard",
+  "trigger_phrases": [
+    "chụp dashboard",
+    "KPI report",
+    "phân tích dashboard",
+    "screenshot KPI"
+  ],
+  "nodes": [
+    {
+      "id": "n_1",
+      "type": "trigger",
+      "x": 60,
+      "y": 40,
+      "config": {
+        "phrases": [
+          "chụp dashboard",
+          "KPI report",
+          "phân tích dashboard"
+        ],
+        "description": "Mở dashboard → screenshot → AI phân tích KPI → gửi Telegram"
+      },
+      "next": [
+        "n_2"
+      ]
+    },
+    {
+      "id": "n_2",
+      "type": "chrome",
+      "x": 60,
+      "y": 130,
+      "config": {
+        "action": "navigate",
+        "url": "{{dashboard_url}}",
+        "wait_after": 5
+      },
+      "next": [
+        "n_3"
+      ]
+    },
+    {
+      "id": "n_3",
+      "type": "wait",
+      "x": 60,
+      "y": 220,
+      "config": {
+        "seconds": 5,
+        "timeout": 20
+      },
+      "next": [
+        "n_4"
+      ]
+    },
+    {
+      "id": "n_4",
+      "type": "screenshot",
+      "x": 60,
+      "y": 310,
+      "config": {
+        "send_telegram": true
+      },
+      "next": [
+        "n_5"
+      ]
+    },
+    {
+      "id": "n_5",
+      "type": "ai_process",
+      "x": 60,
+      "y": 400,
+      "config": {
+        "action": "custom_prompt",
+        "model": "auto",
+        "prompt": "Nhìn vào screenshot dashboard KPI. Phân tích:\n1. Các chỉ số chính (doanh thu, đơn hàng, conversion rate)\n2. Xu hướng tăng/giảm so với kỳ trước\n3. Các chỉ số cần chú ý (đỏ/vàng)\n4. Đề xuất hành động",
+        "input_from": "screenshot",
+        "language": "vi",
+        "max_tokens": 600,
+        "save_result": true
+      },
+      "next": [
+        "n_6"
+      ]
+    },
+    {
+      "id": "n_6",
+      "type": "notify",
+      "x": 60,
+      "y": 490,
+      "config": {
+        "message": "📈 PHÂN TÍCH KPI:\n\n{{result}}"
+      },
+      "next": []
+    }
+  ],
+  "created": "2026-03-26T01:07:07.566651",
+  "active": true
+}

@@ -1,0 +1,75 @@
+{
+  "id": "wf_quotation",
+  "brain_name": "tao_bao_gia",
+  "name": "📋 Tạo báo giá tự động",
+  "trigger_phrases": [
+    "tạo báo giá",
+    "báo giá cho khách",
+    "make quotation",
+    "tạo quote"
+  ],
+  "nodes": [
+    {
+      "id": "n_1",
+      "type": "trigger",
+      "x": 60,
+      "y": 40,
+      "config": {
+        "phrases": [
+          "tạo báo giá",
+          "báo giá cho khách",
+          "make quotation"
+        ],
+        "description": "AI tạo nội dung báo giá → tạo file DOCX chuyên nghiệp → gửi"
+      },
+      "next": [
+        "n_2"
+      ]
+    },
+    {
+      "id": "n_2",
+      "type": "ai_process",
+      "x": 60,
+      "y": 130,
+      "config": {
+        "action": "custom_prompt",
+        "model": "auto",
+        "prompt": "Tạo báo giá chuyên nghiệp:\n\nKhách hàng: {{customer_name}}\nCông ty: {{company}}\nSản phẩm/dịch vụ: {{products}}\nĐiều khoản thanh toán: {{payment_terms}}\n\nGồm:\n1. Header công ty (để trống)\n2. Thông tin khách hàng\n3. Bảng chi tiết sản phẩm (tên, SL, đơn giá, thành tiền)\n4. Tổng cộng + VAT 10%\n5. Điều khoản thanh toán\n6. Hiệu lực báo giá: 30 ngày\n7. Chữ ký",
+        "input_from": "none",
+        "language": "vi",
+        "max_tokens": 800,
+        "save_result": true
+      },
+      "next": [
+        "n_3"
+      ]
+    },
+    {
+      "id": "n_3",
+      "type": "create_document",
+      "x": 60,
+      "y": 220,
+      "config": {
+        "format": "docx",
+        "title": "Báo giá - {{customer_name}}",
+        "ai_structure": true,
+        "send_telegram": true
+      },
+      "next": [
+        "n_4"
+      ]
+    },
+    {
+      "id": "n_4",
+      "type": "notify",
+      "x": 60,
+      "y": 310,
+      "config": {
+        "message": "📋 Báo giá cho {{customer_name}} đã tạo xong!\nFile DOCX đã gửi qua Telegram."
+      },
+      "next": []
+    }
+  ],
+  "created": "2026-03-26T01:07:07.567646",
+  "active": true
+}

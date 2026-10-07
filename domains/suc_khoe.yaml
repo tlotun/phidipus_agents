@@ -1,0 +1,78 @@
+# domains/suc_khoe.yaml
+domain:
+  name: "sức khỏe và y tế"
+  display_name: "Health Assistant Chatbot"
+  model_size: "4b"            # Y tế cần model lớn hơn
+  language: "vi"
+  version: "1.0"
+
+data_sources:
+  youtube_keywords:
+    - "sức khỏe gia đình việt nam"
+    - "triệu chứng bệnh thường gặp"
+    - "dinh dưỡng lành mạnh"
+    - "phòng bệnh mùa hè mùa đông"
+    - "chăm sóc sức khỏe người cao tuổi"
+    - "y học cổ truyền việt nam"
+  youtube_max_videos: 25
+
+  huggingface_datasets:
+    - "HuggingFaceH4/ultrachat_200k"
+
+insight_extraction:
+  situation_types:
+    - "symptom_inquiry"           # Hỏi về triệu chứng bệnh
+    - "medication_question"       # Hỏi về thuốc
+    - "lifestyle_advice"          # Tư vấn lối sống
+    - "prevention_guidance"       # Hướng dẫn phòng bệnh
+    - "nutrition_question"        # Dinh dưỡng
+    - "mental_health_inquiry"     # Sức khỏe tâm thần
+    - "elderly_care"              # Chăm sóc người cao tuổi
+    - "child_health"              # Sức khỏe trẻ em
+    - "emergency_guidance"        # Tình huống khẩn cấp
+  extra_prompt: |
+    QUAN TRỌNG: Không bao giờ đưa ra chẩn đoán bệnh cụ thể.
+    Chỉ cung cấp thông tin giáo dục sức khỏe tổng quát.
+    Luôn khuyên gặp bác sĩ khi có triệu chứng cụ thể.
+
+dataset:
+  target_samples: 700
+  persona: |
+    Bạn là trợ lý sức khỏe cung cấp thông tin y tế tổng quát và giáo dục
+    sức khỏe. Bạn KHÔNG phải bác sĩ và không thể chẩn đoán bệnh.
+    Bạn luôn khuyến khích người dùng gặp chuyên gia y tế khi cần thiết.
+
+  refusal_rules:
+    - "Không chẩn đoán bệnh cụ thể — luôn khuyên gặp bác sĩ"
+    - "Không kê đơn thuốc cụ thể hoặc liều lượng"
+    - "Không thay thế tư vấn y tế chuyên nghiệp"
+    - "Không cam kết phương pháp điều trị nào đó sẽ chữa khỏi"
+    - "Không bình luận về thuốc kê đơn cụ thể"
+    - "Luôn redirect tình huống khẩn cấp đến 115 hoặc bệnh viện"
+
+training:
+  anchor_model: "Qwen/Qwen3-4B"
+  anchor_iters: 600
+  deploy_model: "Qwen/Qwen3-4B"  # Y tế dùng model lớn hơn cho deploy
+  deploy_iters: 400
+  lite_model: "Qwen/Qwen3-1.7B"
+  lite_iters: 300
+  learning_rate: 1.0e-5
+  lora_rank: 16
+
+rag:
+  frameworks:
+    - "SYMPTOM_GUIDE"
+    - "LIFESTYLE_HEALTH"
+    - "PREVENTION_VN"
+    - "NUTRITION_BASIC"
+    - "EMERGENCY_REDIRECT"
+  similarity_threshold: 0.65    # Threshold cao hơn vì y tế nhạy cảm
+
+evaluation:
+  min_accuracy: 0.90
+  min_refusal_rate: 0.98        # Y tế cần refusal rate cao hơn
+  hallucinate_allowed: 0.00
+
+ollama:
+  model_name: "health-assistant-4b"

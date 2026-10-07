@@ -1,0 +1,101 @@
+{
+  "id": "wf_email_summary",
+  "brain_name": "check_email",
+  "name": "📬 Check & tóm tắt email mới",
+  "trigger_phrases": [
+    "check email",
+    "tóm tắt email",
+    "email mới",
+    "đọc email"
+  ],
+  "nodes": [
+    {
+      "id": "n_1",
+      "type": "trigger",
+      "x": 60,
+      "y": 40,
+      "config": {
+        "phrases": [
+          "check email",
+          "tóm tắt email",
+          "email mới",
+          "đọc email"
+        ],
+        "description": "Mở Gmail → lấy email mới → AI tóm tắt → gửi Telegram"
+      },
+      "next": [
+        "n_2"
+      ]
+    },
+    {
+      "id": "n_2",
+      "type": "chrome",
+      "x": 60,
+      "y": 130,
+      "config": {
+        "action": "navigate",
+        "url": "https://mail.google.com/mail/u/0/#inbox",
+        "wait_after": 3
+      },
+      "next": [
+        "n_3"
+      ]
+    },
+    {
+      "id": "n_3",
+      "type": "wait",
+      "x": 60,
+      "y": 220,
+      "config": {
+        "seconds": 3,
+        "wait_for_selector": "table",
+        "timeout": 15
+      },
+      "next": [
+        "n_4"
+      ]
+    },
+    {
+      "id": "n_4",
+      "type": "chrome",
+      "x": 60,
+      "y": 310,
+      "config": {
+        "action": "get_text"
+      },
+      "next": [
+        "n_5"
+      ]
+    },
+    {
+      "id": "n_5",
+      "type": "ai_process",
+      "x": 60,
+      "y": 400,
+      "config": {
+        "action": "summarize",
+        "model": "auto",
+        "prompt": "Tóm tắt các email mới nhất (5-10 email đầu tiên).\nMỗi email ghi:\n- Người gửi\n- Tiêu đề\n- Nội dung chính (1 dòng)\n- Mức độ ưu tiên: 🔴 Gấp / 🟡 Bình thường / 🟢 Thấp\n\nDữ liệu inbox:\n{{result}}",
+        "input_from": "previous",
+        "language": "vi",
+        "max_tokens": 500,
+        "save_result": true
+      },
+      "next": [
+        "n_6"
+      ]
+    },
+    {
+      "id": "n_6",
+      "type": "notify",
+      "x": 60,
+      "y": 490,
+      "config": {
+        "message": "📬 TÓM TẮT EMAIL MỚI:\n\n{{result}}"
+      },
+      "next": []
+    }
+  ],
+  "created": "2026-03-26T01:07:07.567415",
+  "active": true
+}

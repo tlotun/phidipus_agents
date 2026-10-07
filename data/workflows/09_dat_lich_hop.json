@@ -1,0 +1,143 @@
+{
+  "id": "wf_schedule_meeting",
+  "brain_name": "dat_lich_hop",
+  "name": "📅 Đặt lịch họp nhanh",
+  "trigger_phrases": [
+    "đặt lịch họp",
+    "tạo meeting",
+    "schedule meeting",
+    "book meeting"
+  ],
+  "nodes": [
+    {
+      "id": "n_1",
+      "type": "trigger",
+      "x": 60,
+      "y": 40,
+      "config": {
+        "phrases": [
+          "đặt lịch họp",
+          "tạo meeting",
+          "schedule meeting"
+        ],
+        "description": "Mở Google Calendar → tạo event → điền thông tin → lưu"
+      },
+      "next": [
+        "n_2"
+      ]
+    },
+    {
+      "id": "n_2",
+      "type": "chrome",
+      "x": 60,
+      "y": 130,
+      "config": {
+        "action": "navigate",
+        "url": "https://calendar.google.com/calendar/r/eventedit",
+        "wait_after": 3
+      },
+      "next": [
+        "n_3"
+      ]
+    },
+    {
+      "id": "n_3",
+      "type": "wait",
+      "x": 60,
+      "y": 220,
+      "config": {
+        "seconds": 3,
+        "timeout": 15
+      },
+      "next": [
+        "n_4"
+      ]
+    },
+    {
+      "id": "n_4",
+      "type": "vision_click",
+      "x": 60,
+      "y": 310,
+      "config": {
+        "description": "Ô nhập tiêu đề sự kiện (Add title)",
+        "domain": "calendar.google.com",
+        "action_key": "gcal_title",
+        "retry": 2,
+        "wait_after": 0.5
+      },
+      "next": [
+        "n_5"
+      ]
+    },
+    {
+      "id": "n_5",
+      "type": "type_text",
+      "x": 60,
+      "y": 400,
+      "config": {
+        "text": "{{meeting_title}}",
+        "use_clipboard": true
+      },
+      "next": [
+        "n_6"
+      ]
+    },
+    {
+      "id": "n_6",
+      "type": "vision_click",
+      "x": 60,
+      "y": 490,
+      "config": {
+        "description": "Nút hoặc ô thêm người tham dự (Add guests)",
+        "domain": "calendar.google.com",
+        "action_key": "gcal_guests",
+        "retry": 2,
+        "wait_after": 0.5
+      },
+      "next": [
+        "n_7"
+      ]
+    },
+    {
+      "id": "n_7",
+      "type": "type_text",
+      "x": 60,
+      "y": 580,
+      "config": {
+        "text": "{{attendees}}",
+        "use_clipboard": true
+      },
+      "next": [
+        "n_8"
+      ]
+    },
+    {
+      "id": "n_8",
+      "type": "vision_click",
+      "x": 60,
+      "y": 670,
+      "config": {
+        "description": "Nút Lưu hoặc Save",
+        "domain": "calendar.google.com",
+        "action_key": "gcal_save",
+        "retry": 2,
+        "wait_after": 2
+      },
+      "next": [
+        "n_9"
+      ]
+    },
+    {
+      "id": "n_9",
+      "type": "notify",
+      "x": 60,
+      "y": 760,
+      "config": {
+        "message": "📅 Lịch họp '{{meeting_title}}' đã tạo!\nNgười tham dự: {{attendees}}"
+      },
+      "next": []
+    }
+  ],
+  "created": "2026-03-26T01:07:07.567865",
+  "active": true
+}

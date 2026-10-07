@@ -1,0 +1,140 @@
+{
+  "id": "wf_price_monitor",
+  "brain_name": "theo_doi_gia_doi_thu",
+  "name": "💰 Theo dõi giá đối thủ",
+  "trigger_phrases": [
+    "theo dõi giá",
+    "check giá đối thủ",
+    "so sánh giá",
+    "price monitor"
+  ],
+  "nodes": [
+    {
+      "id": "n_1",
+      "type": "trigger",
+      "x": 60,
+      "y": 40,
+      "config": {
+        "phrases": [
+          "theo dõi giá",
+          "check giá đối thủ",
+          "so sánh giá"
+        ],
+        "description": "Vào Shopee + Tiki → đọc giá sản phẩm → so sánh → cảnh báo nếu giảm"
+      },
+      "next": [
+        "n_2"
+      ]
+    },
+    {
+      "id": "n_2",
+      "type": "chrome",
+      "x": 60,
+      "y": 130,
+      "config": {
+        "action": "navigate",
+        "url": "https://shopee.vn/search?keyword={{product_name}}",
+        "wait_after": 3
+      },
+      "next": [
+        "n_3"
+      ]
+    },
+    {
+      "id": "n_3",
+      "type": "wait",
+      "x": 60,
+      "y": 220,
+      "config": {
+        "seconds": 3,
+        "timeout": 15
+      },
+      "next": [
+        "n_4"
+      ]
+    },
+    {
+      "id": "n_4",
+      "type": "chrome",
+      "x": 60,
+      "y": 310,
+      "config": {
+        "action": "get_text"
+      },
+      "next": [
+        "n_5"
+      ]
+    },
+    {
+      "id": "n_5",
+      "type": "chrome",
+      "x": 60,
+      "y": 400,
+      "config": {
+        "action": "navigate",
+        "url": "https://tiki.vn/search?q={{product_name}}",
+        "new_tab": true,
+        "wait_after": 3
+      },
+      "next": [
+        "n_6"
+      ]
+    },
+    {
+      "id": "n_6",
+      "type": "chrome",
+      "x": 60,
+      "y": 490,
+      "config": {
+        "action": "get_text"
+      },
+      "next": [
+        "n_7"
+      ]
+    },
+    {
+      "id": "n_7",
+      "type": "ai_process",
+      "x": 60,
+      "y": 580,
+      "config": {
+        "action": "custom_prompt",
+        "model": "auto",
+        "prompt": "So sánh giá sản phẩm '{{product_name}}' trên 2 sàn:\n\nShopee:\n{{shopee_data}}\n\nTiki:\n{{tiki_data}}\n\nTrả lời:\n1. Giá thấp nhất mỗi sàn\n2. Sàn nào rẻ hơn, chênh bao nhiêu %\n3. Có đang sale/giảm giá không\n4. Đề xuất mua ở đâu",
+        "input_from": "previous",
+        "language": "vi",
+        "max_tokens": 400
+      },
+      "next": [
+        "n_8"
+      ]
+    },
+    {
+      "id": "n_8",
+      "type": "create_document",
+      "x": 60,
+      "y": 670,
+      "config": {
+        "format": "xlsx",
+        "title": "So sánh giá {{product_name}}",
+        "ai_structure": true,
+        "send_telegram": true
+      },
+      "next": [
+        "n_9"
+      ]
+    },
+    {
+      "id": "n_9",
+      "type": "notify",
+      "x": 60,
+      "y": 760,
+      "config": {
+        "message": "💰 So sánh giá {{product_name}} hoàn tất!\n\n{{result}}"
+      },
+      "next": []
+    }
+  ],
+  "created": "2026-03-26T01:07:07.565910",
+  "active": true
+}

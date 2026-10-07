@@ -1,0 +1,2 @@
+# Optional vector RAG (falls back to keyword search without it)
+chromadb==1.5.5

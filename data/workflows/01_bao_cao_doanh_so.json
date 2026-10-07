@@ -1,0 +1,100 @@
+{
+  "id": "wf_sale_daily",
+  "brain_name": "bao_cao_doanh_so",
+  "name": "📊 Báo cáo doanh số hàng ngày",
+  "trigger_phrases": [
+    "báo cáo doanh số",
+    "daily sales report",
+    "doanh số hôm nay"
+  ],
+  "nodes": [
+    {
+      "id": "n_1",
+      "type": "trigger",
+      "x": 60,
+      "y": 40,
+      "config": {
+        "phrases": [
+          "báo cáo doanh số",
+          "daily sales report",
+          "doanh số hôm nay"
+        ],
+        "description": "Mở CRM/Google Sheets → lấy doanh số → AI tóm tắt → gửi Telegram"
+      },
+      "next": [
+        "n_2"
+      ]
+    },
+    {
+      "id": "n_2",
+      "type": "chrome",
+      "x": 60,
+      "y": 130,
+      "config": {
+        "action": "navigate",
+        "url": "https://docs.google.com/spreadsheets/d/{{sheet_id}}/edit",
+        "wait_after": 3
+      },
+      "next": [
+        "n_3"
+      ]
+    },
+    {
+      "id": "n_3",
+      "type": "wait",
+      "x": 60,
+      "y": 220,
+      "config": {
+        "seconds": 3,
+        "wait_for_selector": "table",
+        "timeout": 15
+      },
+      "next": [
+        "n_4"
+      ]
+    },
+    {
+      "id": "n_4",
+      "type": "chrome",
+      "x": 60,
+      "y": 310,
+      "config": {
+        "action": "get_text"
+      },
+      "next": [
+        "n_5"
+      ]
+    },
+    {
+      "id": "n_5",
+      "type": "ai_process",
+      "x": 60,
+      "y": 400,
+      "config": {
+        "action": "custom_prompt",
+        "model": "auto",
+        "prompt": "Phân tích bảng doanh số sau. Tóm tắt:\n1. Tổng doanh số hôm nay\n2. Top 3 sản phẩm bán chạy\n3. So sánh với hôm qua\n4. Nhận xét ngắn gọn\n\nDữ liệu:\n{{result}}",
+        "input_from": "previous",
+        "language": "vi",
+        "max_tokens": 500,
+        "save_result": true
+      },
+      "next": [
+        "n_6"
+      ]
+    },
+    {
+      "id": "n_6",
+      "type": "notify",
+      "x": 60,
+      "y": 490,
+      "config": {
+        "message": "📊 BÁO CÁO DOANH SỐ {{date}}\n\n{{result}}",
+        "include_screenshot": false
+      },
+      "next": []
+    }
+  ],
+  "created": "2026-03-26T01:07:07.565392",
+  "active": true
+}

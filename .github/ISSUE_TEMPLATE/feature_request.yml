@@ -1,0 +1,45 @@
+name: 💡 Đề xuất tính năng / Feature request
+description: Ý tưởng mới hoặc cải tiến cho Phidipus Agents
+title: "[Đề xuất] "
+labels: ["enhancement"]
+body:
+  - type: textarea
+    id: problem
+    attributes:
+      label: Vấn đề bạn gặp / Problem
+      description: Bạn muốn làm gì mà Phidipus Agents chưa làm được, hoặc làm chưa tốt?
+      placeholder: "Mỗi sáng tôi phải … mất 15 phút"
+    validations:
+      required: true
+  - type: textarea
+    id: solution
+    attributes:
+      label: Giải pháp mong muốn / Proposed solution
+      description: Bạn sẽ ra lệnh thế nào và Phidipus Agents nên làm gì? Có câu lệnh ví dụ càng tốt.
+    validations:
+      required: true
+  - type: textarea
+    id: alternatives
+    attributes:
+      label: Cách khác đã thử / Alternatives considered
+  - type: dropdown
+    id: area
+    attributes:
+      label: Liên quan đến phần nào / Area
+      multiple: true
+      options:
+        - Keyboard-first (phím tắt, menu, macro)
+        - Memory Agent (bộ nhớ)
+        - Telegram bot
+        - Admin Panel
+        - Workflow
+        - Nhìn màn hình / click (vision)
+        - Model AI / Ollama
+        - Trình cài đặt
+        - Khác / Other
+  - type: checkboxes
+    id: contribute
+    attributes:
+      label: Đóng góp / Contributing
+      options:
+        - label: Tôi muốn tự làm tính năng này (xem CONTRIBUTING.md). / I would like to implement this.

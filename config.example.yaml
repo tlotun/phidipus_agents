@@ -1,0 +1,120 @@
+# ══════════════════════════════════════════════════════════════════════
+#  Phidipus — example configuration (copy to config.yaml)
+#  The installer (Cai_Dat_Phidipus.command / install.sh) creates config.yaml
+#  from this file and fills the models that fit your Mac's RAM.
+#  NEVER commit config.yaml: it holds your API keys (it is in .gitignore).
+# ══════════════════════════════════════════════════════════════════════
+
+llm:
+  base_url: "http://127.0.0.1:11434"        # Ollama
+  # Qwen3.5 / Gemma 4 are multimodal: one model serves reasoning AND vision
+  reasoning_model: "qwen3.5:9b"
+  coder_model: "qwen3.5:9b"
+  vlm_model: "qwen3.5:9b"
+  request_timeout_seconds: 300.0
+  max_tokens: 4096
+  temperature: 0.2
+  retry_max_attempts: 3
+  retry_base_delay: 0.5
+  default_system_prompt: "You are a precise OS agent. Think step-by-step but keep it concise."
+
+# Model roles (core/model_registry.py) — any missing model is replaced by the
+# best installed equivalent automatically.
+models:
+  fast: "qwen3.5:4b"              # intent parsing, verification, memory reconcile
+  # heavy: "qwen3.8:27b"          # optional big planner (32-64 GB Macs)
+  embed: "qwen3-embedding:0.6b"   # Memory Agent embeddings
+  think: false                    # hidden reasoning off by default (faster)
+  native_tools: true              # Ollama function calling for the ReAct agent
+  lazy_vision: true               # skip the VLM after keyboard / accessibility actions
+
+agent:
+  max_steps: 30
+  task_timeout_seconds: 300.0
+  goal_max_length: 2048
+
+vision:
+  confidence_threshold: 0.8
+  vlm_timeout_seconds: 90.0
+  screen_cache_enabled: true
+  screen_cache_ttl_seconds: 2.0
+  vision_backend: "vlm_only"      # "dino_primary" needs requirements/vision.txt
+  models_dir: "~/.phidipus/models"
+  dino_conf_threshold: 0.3
+  max_refine_iterations: 3
+
+sandbox:
+  docker_image: "python:3.11-slim"
+  seccomp_profile_path: "./sandbox/seccomp_profile.json"
+  network_mode: "none"
+  execution_timeout_seconds: 30.0
+  pool_size: 2
+  memory_limit: "256m"
+  cpu_quota: 0.5
+
+skill_validator:
+  signing_private_key_file: "./keys/skill_signing.priv"
+  signing_public_key_file: "./keys/skill_signing.pub"
+  gate2_timeout_seconds: 20.0
+  max_skill_bytes: 65536
+
+memory:
+  hmac_key_file: "./keys/memory_hmac.key"
+  episodic_max_episodes: 10000
+  embedding_model: "nomic-embed-text"   # legacy RAG / semantic router (768-d)
+  vector_max_items: 2048
+
+memory_agent:
+  enabled: true
+  observe_tasks: true             # learn episodes + procedures from every task
+  share_with_cloud: false         # never inject memories into cloud LLM prompts
+  consolidate_interval_h: 6
+
+ipc:
+  socket_path: "/tmp/phidipus_ipc.sock"
+  max_message_bytes: 65536
+  rate_limit_per_second: 50
+
+evolution:
+  mutations_per_cycle: 5
+  min_score_to_promote: 0.7
+
+skill_forge:
+  # Cloud code generation (optional). Free key: https://aistudio.google.com/apikey
+  gemini_api_key: ""
+  gemini_model: "gemini-2.5-flash"
+  mistral_api_key: ""
+  cerebras_api_key: ""
+  openrouter_api_key: ""
+  ollama_base_url: "http://127.0.0.1:11434"
+  ollama_coder_model: "qwen3.5:9b"
+  skills_dir: "data/skills/forge"
+  max_retries: 2
+  enabled: true
+
+resource_guard:
+  enabled: true
+  max_ram_percent: 88
+  warn_ram_percent: 75
+
+patcher:
+  rate_limit_per_hour: 10
+
+logging:
+  level: "INFO"
+  format: "json"
+
+# Admin panel (http://127.0.0.1:8912). Local use needs no login.
+# Remote login (e.g. through a tunnel) requires a password hash:
+#   ./venv/bin/python -m admin.passwords
+# admin_auth:
+#   username: admin
+#   password_hash: "scrypt$..."
+# admin:
+#   allowed_hosts: ["phidipus.example.com"]      # tunnel domain
+#   allowed_origins: ["https://phidipus.example.com"]
+
+# brain:                           # Brain v7 (MLX) overrides
+#   model_path: "models/Qwen3.5-4B-mlx-4bit"
+#   adapter_path: "adapters_v7"
+#   idle_unload_s: 600

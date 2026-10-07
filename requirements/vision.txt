@@ -1,0 +1,5 @@
+# Optional DINO + Florence-2 vision pipeline (vision.vision_backend: dino_primary)
+onnxruntime==1.24.4
+transformers==5.5.0
+tokenizers==0.22.2
+huggingface_hub==1.9.0

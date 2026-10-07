@@ -1,0 +1,39 @@
+# ══════════════════════════════════════════════════════════
+# elite_pipeline/topics.txt — Danh sách topic mẫu
+# ══════════════════════════════════════════════════════════
+# Mỗi dòng = 1 topic. Dòng bắt đầu # sẽ được bỏ qua.
+# Chạy: python elite_pipeline/run_pipeline.py --topics-file elite_pipeline/topics.txt
+# ══════════════════════════════════════════════════════════
+
+# ── Phàn nàn về giá ──
+Khách nói "Giá cao quá, bên kia rẻ hơn nhiều"
+Khách hỏi giá ngay câu đầu tiên rồi im lặng
+Khách đòi giảm giá 50% mới mua
+Khách nói "Để tôi so giá trên Shopee đã"
+
+# ── Phàn nàn dịch vụ ──
+Khách bực tức vì giao hàng trễ 3 ngày trong dịp lễ
+Hệ thống tự động hủy đơn hàng nhưng không hoàn tiền ngay
+Khách nhận hàng lỗi nhưng đã quá hạn đổi trả
+Khách bị trừ tiền 2 lần cho 1 đơn hàng
+
+# ── Chần chừ/Do dự ──
+Khách nói "Để tôi suy nghĩ thêm đã" sau khi xem demo 30 phút
+Khách hỏi rất kỹ nhưng cuối cùng nói "Tháng sau mua"
+Khách muốn mua nhưng vợ/chồng không đồng ý
+
+# ── So sánh đối thủ ──
+Khách đưa screenshot giá đối thủ rẻ hơn 30%
+Khách nói "Bên X có tính năng này mà bên em không có"
+Khách hỏi "Sao tôi phải chọn bên em thay vì bên kia?"
+
+# ── Tình huống khó ──
+Khách đe dọa review 1 sao trên Google
+Khách la mắng nhân viên trước mặt khách khác
+Khách VIP lâu năm đòi ưu đãi quá mức quy định
+Khách phát hiện nhân viên hứa sai — bây giờ đòi đúng lời hứa
+
+# ── Tình huống đặc biệt ──
+Khách là người cao tuổi không quen công nghệ
+Khách ngoại quốc nói tiếng Việt không rõ, dễ hiểu nhầm
+Khách mua quà tặng đối tác nhưng giao hàng trễ ảnh hưởng uy tín

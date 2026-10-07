@@ -1,0 +1,9 @@
+{
+  "version": "9.18",
+  "token": "",
+  "admin_ids": [],
+  "bot_username": "",
+  "bot_name": "",
+  "auto_start": false,
+  "notes": "Copy to bot_config.json; token from @BotFather, admin_ids = your Telegram user id(s)"
+}

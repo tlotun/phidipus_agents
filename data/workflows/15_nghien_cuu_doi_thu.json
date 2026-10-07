@@ -1,0 +1,173 @@
+{
+  "id": "wf_competitor_research",
+  "brain_name": "nghien_cuu_doi_thu",
+  "name": "🕵️ Nghiên cứu đối thủ cạnh tranh",
+  "trigger_phrases": [
+    "nghiên cứu đối thủ",
+    "phân tích đối thủ",
+    "competitor analysis",
+    "so sánh đối thủ"
+  ],
+  "nodes": [
+    {
+      "id": "n_1",
+      "type": "trigger",
+      "x": 60,
+      "y": 40,
+      "config": {
+        "phrases": [
+          "nghiên cứu đối thủ",
+          "phân tích đối thủ",
+          "competitor analysis"
+        ],
+        "description": "Vào website đối thủ → lấy thông tin → AI phân tích SWOT → báo cáo"
+      },
+      "next": [
+        "n_2"
+      ]
+    },
+    {
+      "id": "n_2",
+      "type": "chrome",
+      "x": 60,
+      "y": 130,
+      "config": {
+        "action": "navigate",
+        "url": "{{competitor_url_1}}",
+        "wait_after": 3
+      },
+      "next": [
+        "n_3"
+      ]
+    },
+    {
+      "id": "n_3",
+      "type": "chrome",
+      "x": 60,
+      "y": 220,
+      "config": {
+        "action": "get_text"
+      },
+      "next": [
+        "n_4"
+      ]
+    },
+    {
+      "id": "n_4",
+      "type": "chrome",
+      "x": 60,
+      "y": 310,
+      "config": {
+        "action": "navigate",
+        "url": "{{competitor_url_2}}",
+        "new_tab": true,
+        "wait_after": 3
+      },
+      "next": [
+        "n_5"
+      ]
+    },
+    {
+      "id": "n_5",
+      "type": "chrome",
+      "x": 60,
+      "y": 400,
+      "config": {
+        "action": "get_text"
+      },
+      "next": [
+        "n_6"
+      ]
+    },
+    {
+      "id": "n_6",
+      "type": "chrome",
+      "x": 60,
+      "y": 490,
+      "config": {
+        "action": "navigate",
+        "url": "https://www.google.com/search?q={{competitor_name}}+review+đánh giá",
+        "new_tab": true,
+        "wait_after": 2
+      },
+      "next": [
+        "n_7"
+      ]
+    },
+    {
+      "id": "n_7",
+      "type": "chrome",
+      "x": 60,
+      "y": 580,
+      "config": {
+        "action": "get_text"
+      },
+      "next": [
+        "n_8"
+      ]
+    },
+    {
+      "id": "n_8",
+      "type": "ai_process",
+      "x": 60,
+      "y": 670,
+      "config": {
+        "action": "custom_prompt",
+        "model": "auto",
+        "prompt": "Phân tích đối thủ cạnh tranh dựa trên dữ liệu thu thập:\n\n{{result}}\n\nTạo báo cáo gồm:\n1. SWOT Analysis (Strengths, Weaknesses, Opportunities, Threats)\n2. So sánh sản phẩm/dịch vụ chính\n3. Chiến lược giá\n4. Điểm mạnh cần học hỏi\n5. Điểm yếu ta có thể khai thác\n6. Đề xuất chiến lược cạnh tranh",
+        "input_from": "previous",
+        "language": "vi",
+        "max_tokens": 800,
+        "save_result": true
+      },
+      "next": [
+        "n_9"
+      ]
+    },
+    {
+      "id": "n_9",
+      "type": "generate_report",
+      "x": 60,
+      "y": 760,
+      "config": {
+        "title": "🕵️ Phân tích đối thủ: {{competitor_name}}",
+        "sections": [
+          {
+            "label": "Website đối thủ 1",
+            "content": "{{comp1_data}}"
+          },
+          {
+            "label": "Website đối thủ 2",
+            "content": "{{comp2_data}}"
+          },
+          {
+            "label": "Reviews & đánh giá",
+            "content": "{{review_data}}"
+          },
+          {
+            "label": "AI SWOT Analysis",
+            "content": "{{result}}"
+          }
+        ],
+        "ai_summary": true,
+        "send_telegram": true,
+        "save": true
+      },
+      "next": [
+        "n_10"
+      ]
+    },
+    {
+      "id": "n_10",
+      "type": "notify",
+      "x": 60,
+      "y": 850,
+      "config": {
+        "message": "🕵️ Nghiên cứu đối thủ {{competitor_name}} hoàn tất!\nBáo cáo SWOT đã gửi Telegram."
+      },
+      "next": []
+    }
+  ],
+  "created": "2026-03-26T01:07:07.569757",
+  "active": true
+}

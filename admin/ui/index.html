@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html lang="vi" class="dark">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="theme-color" content="#0a0a0f" />
+  <link rel="manifest" href="/manifest.json" />
+  <link rel="icon" type="image/png" href="/static/logo-phidipus.png" />
+  <title>Phidipus BeeHive v9.21</title>
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    html, body { height: 100%; background: #09090b; color: #fafafa; font-family: 'Space Grotesk', system-ui, sans-serif; }
+    #app { height: 100%; }
+    #splash {
+      position: fixed; inset: 0; background: #09090b;
+      display: flex; flex-direction: column;
+      align-items: center; justify-content: center; gap: 16px;
+      z-index: 9999; transition: opacity 0.4s;
+    }
+    #splash .bee { width: 80px; height: 80px; animation: float 2s ease-in-out infinite; }
+    #splash .bee img { width: 100%; height: 100%; object-fit: contain; }
+    @keyframes float { 0%,100%{transform:translateY(0)} 50%{transform:translateY(-12px)} }
+    #splash .label { color: #22c55e; font-size: 18px; font-weight: 700; letter-spacing: 0.1em; }
+    #splash .sub { color: #52525b; font-size: 13px; }
+  </style>
+</head>
+<body>
+  <!-- Splash shown until Vue mounts -->
+  <div id="splash">
+    <div class="bee"><img src="/static/logo-phidipus.png" alt="Phidipus" /></div>
+    <div class="label">PHIDIPUS v9.21</div>
+    <div class="sub">Initializing...</div>
+  </div>
+
+  <div id="app"></div>
+
+  <script>
+    // Hide splash when Vue is ready
+    window.__hideSplash = function() {
+      const s = document.getElementById('splash');
+      if (s) { s.style.opacity = '0'; setTimeout(() => s.remove(), 400); }
+    };
+
+    // PWA service worker registration
+    if ('serviceWorker' in navigator) {
+      window.addEventListener('load', () => {
+        navigator.serviceWorker.register('/sw.js').catch(() => {});
+      });
+    }
+  </script>
+
+  <script type="module" src="/src/main.ts"></script>
+</body>
+</html>

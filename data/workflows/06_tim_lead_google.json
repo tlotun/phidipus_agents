@@ -1,0 +1,128 @@
+{
+  "id": "wf_find_leads",
+  "brain_name": "tim_lead_google",
+  "name": "🔍 Tìm lead trên Google",
+  "trigger_phrases": [
+    "tìm lead",
+    "tìm khách hàng tiềm năng",
+    "google lead",
+    "find leads"
+  ],
+  "nodes": [
+    {
+      "id": "n_1",
+      "type": "trigger",
+      "x": 60,
+      "y": 40,
+      "config": {
+        "phrases": [
+          "tìm lead",
+          "tìm khách hàng tiềm năng",
+          "google lead"
+        ],
+        "description": "Google search → lấy kết quả → AI phân tích lead → tạo file Excel"
+      },
+      "next": [
+        "n_2"
+      ]
+    },
+    {
+      "id": "n_2",
+      "type": "chrome",
+      "x": 60,
+      "y": 130,
+      "config": {
+        "action": "navigate",
+        "url": "https://www.google.com/search?q={{search_query}}+site:linkedin.com",
+        "wait_after": 2
+      },
+      "next": [
+        "n_3"
+      ]
+    },
+    {
+      "id": "n_3",
+      "type": "chrome",
+      "x": 60,
+      "y": 220,
+      "config": {
+        "action": "get_text"
+      },
+      "next": [
+        "n_4"
+      ]
+    },
+    {
+      "id": "n_4",
+      "type": "chrome",
+      "x": 60,
+      "y": 310,
+      "config": {
+        "action": "navigate",
+        "url": "https://www.google.com/search?q={{search_query}}+email+contact",
+        "new_tab": true,
+        "wait_after": 2
+      },
+      "next": [
+        "n_5"
+      ]
+    },
+    {
+      "id": "n_5",
+      "type": "chrome",
+      "x": 60,
+      "y": 400,
+      "config": {
+        "action": "get_text"
+      },
+      "next": [
+        "n_6"
+      ]
+    },
+    {
+      "id": "n_6",
+      "type": "ai_process",
+      "x": 60,
+      "y": 490,
+      "config": {
+        "action": "custom_prompt",
+        "model": "auto",
+        "prompt": "Từ kết quả tìm kiếm sau, trích xuất danh sách khách hàng tiềm năng.\nMỗi lead gồm: Tên, Công ty, Chức vụ, Email (nếu có), LinkedIn URL (nếu có).\nTrả về dạng bảng.\n\nKết quả:\n{{result}}",
+        "input_from": "previous",
+        "language": "vi",
+        "max_tokens": 600,
+        "save_result": true
+      },
+      "next": [
+        "n_7"
+      ]
+    },
+    {
+      "id": "n_7",
+      "type": "create_document",
+      "x": 60,
+      "y": 580,
+      "config": {
+        "format": "xlsx",
+        "title": "Lead List - {{search_query}}",
+        "ai_structure": true,
+        "send_telegram": true
+      },
+      "next": [
+        "n_8"
+      ]
+    },
+    {
+      "id": "n_8",
+      "type": "notify",
+      "x": 60,
+      "y": 670,
+      "config": {
+        "message": "🔍 Tìm lead xong!\nDanh sách đã lưu file Excel và gửi Telegram."
+      },
+      "next": []
+    }
+  ],
+  "created": "2026-03-26T01:07:07.567180",
+  "active": true
+}

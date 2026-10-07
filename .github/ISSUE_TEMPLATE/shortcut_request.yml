@@ -1,0 +1,41 @@
+name: ⌨️ Thêm phím tắt / ứng dụng — Shortcut or app support
+description: Lệnh mới chạy bằng phím tắt, menu hoặc macro (không cần AI nhìn màn hình)
+title: "[Phím tắt] "
+labels: ["enhancement"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Muốn tự thêm? Chỉ cần sửa `data/shortcuts/macos.yaml` — xem [hướng dẫn](https://github.com/tlotun/phidipus_agents/blob/main/CONTRIBUTING.md#thêm-phím-tắt-hoặc-ứng-dụng).
+  - type: input
+    id: app
+    attributes:
+      label: Ứng dụng / App
+      description: Tên ứng dụng, kèm bundle id nếu biết (`osascript -e 'id of app "Tên App"'`)
+      placeholder: "Zalo (com.vng.zalo)"
+    validations:
+      required: true
+  - type: textarea
+    id: commands
+    attributes:
+      label: Câu lệnh và phím tắt / Commands and keys
+      description: Mỗi dòng một lệnh — câu bạn sẽ nói (tiếng Việt / tiếng Anh) → phím tắt hoặc đường dẫn menu
+      placeholder: |
+        "tìm tin nhắn" / "search messages" → ⌘F
+        "xuất pdf" → menu File › Export as PDF…
+    validations:
+      required: true
+  - type: input
+    id: versions
+    attributes:
+      label: Phiên bản ứng dụng · macOS
+      placeholder: "Zalo 24.10 · macOS 15.4"
+  - type: dropdown
+    id: risk
+    attributes:
+      label: Thao tác có hoàn tác được không? / Is it reversible?
+      options:
+        - Có — an toàn (mở, tìm, xem…)
+        - Không — xoá, gửi, thanh toán, thoát… (agent phải hỏi xác nhận)
+    validations:
+      required: true

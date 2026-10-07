@@ -1,0 +1,26 @@
+name: ❓ Hỏi đáp / Hỗ trợ cài đặt — Question
+description: Chưa chắc là lỗi? Hỏi về cách cài đặt hoặc cách dùng
+title: "[Hỏi] "
+labels: ["question"]
+body:
+  - type: textarea
+    id: question
+    attributes:
+      label: Câu hỏi / Question
+    validations:
+      required: true
+  - type: textarea
+    id: tried
+    attributes:
+      label: Bạn đã thử gì? / What did you try?
+  - type: input
+    id: mac
+    attributes:
+      label: macOS · chip · RAM
+      placeholder: "macOS 15.4 · Apple M2 · 16 GB"
+  - type: textarea
+    id: doctor
+    attributes:
+      label: Kết quả kiểm tra sức khoẻ (nếu đã cài) / Doctor output
+      description: "Chạy `./venv/bin/python installer/setup_phidipus.py --doctor` trong thư mục cài đặt. Xoá thông tin cá nhân trước khi dán."
+      render: text

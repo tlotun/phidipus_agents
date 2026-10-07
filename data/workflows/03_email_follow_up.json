@@ -1,0 +1,129 @@
+{
+  "id": "wf_email_followup",
+  "brain_name": "email_follow_up",
+  "name": "📧 Email follow-up khách hàng",
+  "trigger_phrases": [
+    "gửi email follow up",
+    "follow up khách",
+    "email chăm sóc khách",
+    "email follow up"
+  ],
+  "nodes": [
+    {
+      "id": "n_1",
+      "type": "trigger",
+      "x": 60,
+      "y": 40,
+      "config": {
+        "phrases": [
+          "gửi email follow up",
+          "follow up khách",
+          "email chăm sóc khách"
+        ],
+        "description": "AI soạn email follow-up → mở Gmail → gửi"
+      },
+      "next": [
+        "n_2"
+      ]
+    },
+    {
+      "id": "n_2",
+      "type": "ai_process",
+      "x": 60,
+      "y": 130,
+      "config": {
+        "action": "custom_prompt",
+        "model": "auto",
+        "prompt": "Soạn email follow-up chuyên nghiệp bằng tiếng Việt.\nNgười nhận: {{customer_name}}\nEmail: {{customer_email}}\nSản phẩm quan tâm: {{product}}\nLần liên hệ trước: {{last_contact}}\n\nYêu cầu: Lịch sự, ngắn gọn, nhắc lại sản phẩm, đề xuất demo/meeting, có CTA rõ ràng.",
+        "input_from": "none",
+        "language": "vi",
+        "max_tokens": 400,
+        "save_result": true
+      },
+      "next": [
+        "n_3"
+      ]
+    },
+    {
+      "id": "n_3",
+      "type": "chrome",
+      "x": 60,
+      "y": 220,
+      "config": {
+        "action": "navigate",
+        "url": "https://mail.google.com/mail/?view=cm&fs=1&to={{customer_email}}&su=Follow-up: {{product}}",
+        "wait_after": 3
+      },
+      "next": [
+        "n_4"
+      ]
+    },
+    {
+      "id": "n_4",
+      "type": "wait",
+      "x": 60,
+      "y": 310,
+      "config": {
+        "seconds": 3,
+        "wait_for_selector": "[role=textbox]",
+        "timeout": 15
+      },
+      "next": [
+        "n_5"
+      ]
+    },
+    {
+      "id": "n_5",
+      "type": "vision_click",
+      "x": 60,
+      "y": 400,
+      "config": {
+        "description": "Ô soạn nội dung email (vùng trắng lớn)",
+        "domain": "mail.google.com",
+        "action_key": "gmail_compose_body",
+        "retry": 2,
+        "wait_after": 1
+      },
+      "next": [
+        "n_6"
+      ]
+    },
+    {
+      "id": "n_6",
+      "type": "type_text",
+      "x": 60,
+      "y": 490,
+      "config": {
+        "text": "{{result}}",
+        "use_clipboard": true
+      },
+      "next": [
+        "n_7"
+      ]
+    },
+    {
+      "id": "n_7",
+      "type": "screenshot",
+      "x": 60,
+      "y": 580,
+      "config": {
+        "send_telegram": true
+      },
+      "next": [
+        "n_8"
+      ]
+    },
+    {
+      "id": "n_8",
+      "type": "notify",
+      "x": 60,
+      "y": 670,
+      "config": {
+        "message": "📧 Email follow-up đã soạn cho {{customer_name}}.\nKiểm tra Gmail trước khi gửi!"
+      },
+      "next": []
+    }
+  ],
+  "created": "2026-03-26T01:07:07.566343",
+  "active": true
+}

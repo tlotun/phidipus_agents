@@ -1,0 +1,130 @@
+{
+  "id": "wf_crm_export",
+  "brain_name": "xuat_crm",
+  "name": "📊 Xuất CRM & phân tích",
+  "trigger_phrases": [
+    "xuất CRM",
+    "export CRM",
+    "phân tích CRM",
+    "CRM report"
+  ],
+  "nodes": [
+    {
+      "id": "n_1",
+      "type": "trigger",
+      "x": 60,
+      "y": 40,
+      "config": {
+        "phrases": [
+          "xuất CRM",
+          "export CRM",
+          "phân tích CRM",
+          "CRM report"
+        ],
+        "description": "Vào CRM → export data → AI phân tích → tạo Excel + báo cáo"
+      },
+      "next": [
+        "n_2"
+      ]
+    },
+    {
+      "id": "n_2",
+      "type": "chrome",
+      "x": 60,
+      "y": 130,
+      "config": {
+        "action": "navigate",
+        "url": "{{crm_url}}",
+        "wait_after": 3
+      },
+      "next": [
+        "n_3"
+      ]
+    },
+    {
+      "id": "n_3",
+      "type": "wait",
+      "x": 60,
+      "y": 220,
+      "config": {
+        "seconds": 3,
+        "timeout": 20
+      },
+      "next": [
+        "n_4"
+      ]
+    },
+    {
+      "id": "n_4",
+      "type": "chrome",
+      "x": 60,
+      "y": 310,
+      "config": {
+        "action": "get_text"
+      },
+      "next": [
+        "n_5"
+      ]
+    },
+    {
+      "id": "n_5",
+      "type": "ai_process",
+      "x": 60,
+      "y": 400,
+      "config": {
+        "action": "custom_prompt",
+        "model": "auto",
+        "prompt": "Phân tích dữ liệu CRM sau:\n\n{{result}}\n\nTrả lời:\n1. Tổng số lead/khách hàng\n2. Phân loại theo trạng thái (New, Contacted, Qualified, Won, Lost)\n3. Top 5 deal lớn nhất\n4. Conversion rate ước tính\n5. Pipeline value tổng\n6. Đề xuất ưu tiên follow-up",
+        "input_from": "previous",
+        "language": "vi",
+        "max_tokens": 600,
+        "save_result": true
+      },
+      "next": [
+        "n_6"
+      ]
+    },
+    {
+      "id": "n_6",
+      "type": "create_document",
+      "x": 60,
+      "y": 490,
+      "config": {
+        "format": "xlsx",
+        "title": "CRM Report {{date}}",
+        "ai_structure": true,
+        "send_telegram": true
+      },
+      "next": [
+        "n_7"
+      ]
+    },
+    {
+      "id": "n_7",
+      "type": "generate_report",
+      "x": 60,
+      "y": 580,
+      "config": {
+        "title": "CRM Analysis Report",
+        "ai_summary": true,
+        "send_telegram": true,
+        "save": true
+      },
+      "next": [
+        "n_8"
+      ]
+    },
+    {
+      "id": "n_8",
+      "type": "notify",
+      "x": 60,
+      "y": 670,
+      "config": {
+        "message": "📊 CRM Report hoàn tất!\nExcel + HTML đã gửi Telegram."
+      },
+      "next": []
+    }
+  ],
+  "created": "2026-03-26T01:07:07.569460",
+  "active": true
+}

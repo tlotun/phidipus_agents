@@ -1,0 +1,6 @@
+# macOS automation layer (L2): Quartz events, AppKit, Accessibility
+pyobjc-core==12.1 ; sys_platform == "darwin"
+pyobjc-framework-Cocoa==12.1 ; sys_platform == "darwin"
+pyobjc-framework-Quartz==12.1 ; sys_platform == "darwin"
+pyobjc-framework-ApplicationServices==12.1 ; sys_platform == "darwin"
+atomacos==3.3.0 ; sys_platform == "darwin"

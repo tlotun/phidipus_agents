@@ -1,0 +1,431 @@
+# ══════════════════════════════════════════════════════════════════════
+#  Phidipus Agents — macOS keyboard-first catalog (v4.3)
+# ══════════════════════════════════════════════════════════════════════
+#  Used by core/keyboard_first.py to run commands with the keyboard / menu
+#  bar instead of "screenshot → VLM → click coordinates" (ms instead of
+#  seconds, no coordinate errors, works with any UI language).
+#
+#  Fields
+#    id     unique within its group (tools / memory use "<group>.<id>")
+#    keys   chord, "+"-separated: cmd, alt(option), shift, ctrl, fn + a key name
+#           (a…z, 0…9, = - [ ] ; ' , . / \ `, return, tab, space, delete,
+#           forwarddelete, escape, left, right, up, down, home, end,
+#           pageup, pagedown, f1…f12)
+#    say    Vietnamese / English commands (accent-insensitive, FULL match;
+#           "{param}" captures text for macros)
+#    desc   one line for the agent's tool list
+#    risk   low (default) | medium | high (needs user_confirm) | critical
+#    when   text_focus | no_text_focus   (single-key shortcuts must not type)
+#    url    substring the browser URL must contain (web-app shortcuts)
+#    expect window | app | clipboard     (cheap verification via ui_snapshot)
+#    menu   alternative menu paths (tried when the shortcut has no effect)
+#    steps  macro steps: {hotkey|press|type|wait|menu|app|read_clipboard}
+#    since  minimum macOS major version
+#
+#  Group "bundles": app bundle ids, "*" = any app, "@chromium", "@browser".
+# ══════════════════════════════════════════════════════════════════════
+version: 1
+
+apps:
+  chrome:   {bundle: com.google.Chrome,           name: Google Chrome,      say: [chrome, google chrome]}
+  safari:   {bundle: com.apple.Safari,            name: Safari,             say: [safari]}
+  edge:     {bundle: com.microsoft.edgemac,       name: Microsoft Edge,     say: [edge]}
+  brave:    {bundle: com.brave.Browser,           name: Brave Browser,      say: [brave]}
+  arc:      {bundle: company.thebrowser.Browser,  name: Arc,                say: [arc]}
+  finder:   {bundle: com.apple.finder,            name: Finder,             say: [finder]}
+  mail:     {bundle: com.apple.mail,              name: Mail,               say: [mail, apple mail, ung dung mail]}
+  notes:    {bundle: com.apple.Notes,             name: Notes,              say: [notes, ghi chu]}
+  preview:  {bundle: com.apple.Preview,           name: Preview,            say: [preview, xem truoc]}
+  terminal: {bundle: com.apple.Terminal,          name: Terminal,           say: [terminal]}
+  iterm:    {bundle: com.googlecode.iterm2,       name: iTerm,              say: [iterm]}
+  vscode:   {bundle: com.microsoft.VSCode,        name: Visual Studio Code, say: [vscode, vs code, visual studio code]}
+  cursor:   {bundle: com.todesktop.230313mzl4w4u92, name: Cursor,           say: [cursor]}
+  word:     {bundle: com.microsoft.Word,          name: Microsoft Word,     say: [word]}
+  excel:    {bundle: com.microsoft.Excel,         name: Microsoft Excel,    say: [excel]}
+  powerpoint: {bundle: com.microsoft.Powerpoint,  name: Microsoft PowerPoint, say: [powerpoint]}
+  pages:    {bundle: com.apple.iWork.Pages,       name: Pages,              say: [pages]}
+  numbers:  {bundle: com.apple.iWork.Numbers,     name: Numbers,            say: [numbers]}
+  keynote:  {bundle: com.apple.iWork.Keynote,     name: Keynote,            say: [keynote]}
+  slack:    {bundle: com.tinyspeck.slackmacgap,   name: Slack,              say: [slack]}
+  zalo:     {bundle: com.vng.zalo,                name: Zalo,               say: [zalo]}
+  telegram: {bundle: ru.keepcoder.Telegram,       name: Telegram,           say: [telegram]}
+
+aliases:
+  "@chromium": [com.google.Chrome, com.microsoft.edgemac, com.brave.Browser, company.thebrowser.Browser,
+                com.vivaldi.Vivaldi, com.operasoftware.Opera, org.chromium.Chromium]
+  "@browser":  ["@chromium", com.apple.Safari, org.mozilla.firefox]
+  "@office":   [com.microsoft.Word, com.microsoft.Excel, com.microsoft.Powerpoint,
+                com.apple.iWork.Pages, com.apple.iWork.Numbers, com.apple.iWork.Keynote]
+  "@terminal": [com.apple.Terminal, com.googlecode.iterm2]
+  "@editor":   [com.microsoft.VSCode, com.todesktop.230313mzl4w4u92]
+  "@chat":     [com.vng.zalo, ru.keepcoder.Telegram, org.telegram.desktop, com.tinyspeck.slackmacgap,
+                com.facebook.archon, com.microsoft.teams2, com.hnc.Discord]
+
+groups:
+  # ── Standard Cocoa commands (any app) ──────────────────────────────
+  - name: standard
+    bundles: ["*"]
+    shortcuts:
+      - {id: save,          keys: "cmd+s",       desc: "Save the document", say: [lưu, lưu lại, lưu file, save, save file]}
+      - {id: save_as,       keys: "cmd+shift+s", desc: "Save as / duplicate", say: [lưu thành, lưu với tên khác, lưu dưới tên khác, save as]}
+      - {id: undo,          keys: "cmd+z",       desc: "Undo", say: [hoàn tác, undo, quay lại thao tác trước]}
+      - {id: redo,          keys: "cmd+shift+z", desc: "Redo", say: [làm lại, redo]}
+      - {id: select_all,    keys: "cmd+a",       desc: "Select all", say: [chọn tất cả, chọn hết, bôi đen tất cả, select all]}
+      - {id: copy,          keys: "cmd+c",       desc: "Copy selection", say: [copy, sao chép, chép], expect: clipboard}
+      - {id: cut,           keys: "cmd+x",       desc: "Cut selection", say: [cut, cắt]}
+      - {id: paste,         keys: "cmd+v",       desc: "Paste", say: [paste, dán]}
+      - {id: paste_plain,   keys: "cmd+alt+shift+v", desc: "Paste and match style (plain text)", say: [dán không định dạng, dán văn bản thuần, paste and match style, paste plain text]}
+      - {id: find,          keys: "cmd+f",       desc: "Find in the current document/page", say: [tìm trong trang, tìm trong tài liệu, find, tìm kiếm trong trang]}
+      - {id: find_next,     keys: "cmd+g",       desc: "Find next match", say: [tìm tiếp, kết quả tiếp theo, find next]}
+      - {id: print,         keys: "cmd+p",       desc: "Print", say: [in, in trang, in tài liệu, print]}
+      - {id: new_doc,       keys: "cmd+n",       desc: "New document/window", say: [tạo mới, tài liệu mới, cửa sổ mới, new window, new document]}
+      - {id: open_file,     keys: "cmd+o",       desc: "Open… dialog", say: [mở file, mở tệp, open file]}
+      - {id: close_window,  keys: "cmd+w",       desc: "Close window or tab", say: [đóng cửa sổ, close window], expect: window}
+      - {id: close_all,     keys: "cmd+alt+w",   desc: "Close all windows of the app", say: [đóng tất cả cửa sổ, close all windows], risk: medium}
+      - {id: quit_app,      keys: "cmd+q",       desc: "Quit the app", say: [thoát app, thoát ứng dụng, tắt ứng dụng, quit, quit app], risk: medium, expect: app}
+      - {id: hide_app,      keys: "cmd+h",       desc: "Hide the app", say: [ẩn app, ẩn ứng dụng, hide, hide app], expect: app}
+      - {id: hide_others,   keys: "cmd+alt+h",   desc: "Hide other apps", say: [ẩn các app khác, ẩn ứng dụng khác, hide others]}
+      - {id: minimize,      keys: "cmd+m",       desc: "Minimize window", say: [thu nhỏ cửa sổ, minimize, ẩn cửa sổ xuống dock], expect: window}
+      - {id: fullscreen,    keys: "ctrl+cmd+f",  desc: "Toggle full screen", say: [toàn màn hình, phóng to toàn màn hình, fullscreen, full screen]}
+      - {id: settings,      keys: "cmd+,",       desc: "Open the app's Settings", say: [cài đặt ứng dụng, mở cài đặt app, preferences, settings]}
+      - {id: next_window,   keys: "cmd+`",       desc: "Next window of the same app", say: [cửa sổ tiếp theo, chuyển cửa sổ, next window]}
+      - {id: zoom_in,       keys: "cmd+=",       desc: "Zoom in", say: [phóng to, zoom in, phóng to chữ]}
+      - {id: zoom_out,      keys: "cmd+-",       desc: "Zoom out", say: [thu nhỏ, zoom out, thu nhỏ chữ]}
+      - {id: zoom_reset,    keys: "cmd+0",       desc: "Actual size / reset zoom", say: [kích thước gốc, reset zoom, zoom mặc định]}
+      - {id: help_search,   keys: "cmd+shift+/", desc: "Search the Help menu (finds any menu command)", say: [tìm lệnh trong menu, help search, tìm menu]}
+      - {id: emoji,         keys: "ctrl+cmd+space", desc: "Emoji & symbols picker", say: [biểu tượng cảm xúc, chèn emoji, emoji]}
+      - {id: bold,          keys: "cmd+b",       desc: "Bold (text apps)", say: [in đậm, bold], when: text_focus}
+      - {id: italic,        keys: "cmd+i",       desc: "Italic (text apps)", say: [in nghiêng, italic], when: text_focus}
+      - {id: underline,     keys: "cmd+u",       desc: "Underline (text apps)", say: [gạch chân, underline], when: text_focus}
+      - {id: insert_link,   keys: "cmd+k",       desc: "Insert / edit link", say: [chèn link, chèn liên kết, insert link], when: text_focus}
+
+  # ── macOS system (any frontmost app) ───────────────────────────────
+  - name: system
+    bundles: ["*"]
+    shortcuts:
+      - {id: spotlight,      keys: "cmd+space",       desc: "Open Spotlight search", say: [spotlight, mở spotlight, tìm kiếm spotlight]}
+      - {id: app_switcher,   keys: "cmd+tab",         desc: "Switch to the previous app", say: [chuyển app, chuyển ứng dụng, switch app], expect: app}
+      - {id: force_quit,     keys: "cmd+alt+escape",  desc: "Force Quit dialog", say: [buộc thoát, force quit, mở hộp thoại buộc thoát], risk: medium}
+      - {id: lock_screen,    keys: "ctrl+cmd+q",      desc: "Lock the screen", say: [khoá màn hình, khóa màn hình, lock screen], risk: high}
+      - {id: screenshot_full, keys: "cmd+shift+3",    desc: "Screenshot of the whole screen to Desktop", say: [chụp màn hình, chụp toàn màn hình, screenshot]}
+      - {id: screenshot_area, keys: "cmd+shift+4",    desc: "Screenshot of a selected area", say: [chụp vùng, chụp một vùng màn hình, screenshot area]}
+      - {id: screenshot_tool, keys: "cmd+shift+5",    desc: "Screenshot / screen recording toolbar", say: [công cụ chụp màn hình, quay màn hình, screen recording]}
+      - {id: mission_control, keys: "ctrl+up",        desc: "Mission Control (all windows)", say: [mission control, xem tất cả cửa sổ]}
+      - {id: app_windows,    keys: "ctrl+down",       desc: "App Exposé (windows of current app)", say: [xem cửa sổ của app, app expose]}
+      - {id: next_space,     keys: "ctrl+right",      desc: "Next desktop (Space)", say: [màn hình desktop tiếp theo, chuyển desktop phải, next desktop]}
+      - {id: prev_space,     keys: "ctrl+left",       desc: "Previous desktop (Space)", say: [màn hình desktop trước, chuyển desktop trái, previous desktop]}
+      - {id: show_desktop,   keys: "cmd+f3",          desc: "Show desktop", say: [hiện desktop, show desktop, xem màn hình nền]}
+      - {id: toggle_dock,    keys: "cmd+alt+d",       desc: "Show / hide the Dock", say: [ẩn hiện dock, ẩn dock, hiện dock, toggle dock]}
+      - {id: tile_left,      keys: "fn+ctrl+left",    desc: "Tile window to the left half (macOS 15+)", say: [xếp cửa sổ sang trái, chia đôi màn hình bên trái, tile left], since: 15, expect: window,
+         menu: [[Window, Move & Resize, Left], [Cửa sổ, Di chuyển & Thay đổi kích thước, Trái]]}
+      - {id: tile_right,     keys: "fn+ctrl+right",   desc: "Tile window to the right half (macOS 15+)", say: [xếp cửa sổ sang phải, chia đôi màn hình bên phải, tile right], since: 15, expect: window,
+         menu: [[Window, Move & Resize, Right], [Cửa sổ, Di chuyển & Thay đổi kích thước, Phải]]}
+      - {id: tile_fill,      keys: "fn+ctrl+f",       desc: "Fill the screen with the window (macOS 15+)", say: [phóng cửa sổ đầy màn hình, lấp đầy màn hình, fill screen], since: 15, expect: window,
+         menu: [[Window, Fill], [Cửa sổ, Lấp đầy]]}
+      - {id: tile_center,    keys: "fn+ctrl+c",       desc: "Center the window (macOS 15+)", say: [căn giữa cửa sổ, center window], since: 15, expect: window,
+         menu: [[Window, Center], [Cửa sổ, Căn giữa]]}
+
+  # ── Text editing (a text field must be focused) ────────────────────
+  - name: text
+    bundles: ["*"]
+    when: text_focus
+    shortcuts:
+      - {id: line_start,       keys: "cmd+left",        desc: "Cursor to line start", say: [về đầu dòng, đầu dòng, line start]}
+      - {id: line_end,         keys: "cmd+right",       desc: "Cursor to line end", say: [về cuối dòng, cuối dòng, line end]}
+      - {id: doc_start,        keys: "cmd+up",          desc: "Cursor to document start", say: [về đầu văn bản, đầu trang, đầu văn bản]}
+      - {id: doc_end,          keys: "cmd+down",        desc: "Cursor to document end", say: [về cuối văn bản, cuối trang, cuối văn bản]}
+      - {id: word_left,        keys: "alt+left",        desc: "Previous word", say: [lùi một từ, word left]}
+      - {id: word_right,       keys: "alt+right",       desc: "Next word", say: [tiến một từ, word right]}
+      - {id: select_line_left, keys: "cmd+shift+left",  desc: "Select to line start", say: [chọn đến đầu dòng]}
+      - {id: select_line_right, keys: "cmd+shift+right", desc: "Select to line end", say: [chọn đến cuối dòng]}
+      - {id: select_word_left, keys: "alt+shift+left",  desc: "Select previous word", say: [chọn từ trước]}
+      - {id: select_to_end,    keys: "cmd+shift+down",  desc: "Select to document end", say: [chọn đến cuối văn bản]}
+      - {id: delete_word,      keys: "alt+delete",      desc: "Delete previous word", say: [xoá một từ, xóa từ trước, delete word]}
+      - {id: delete_to_start,  keys: "cmd+delete",      desc: "Delete to line start", say: [xoá đến đầu dòng, xóa đến đầu dòng]}
+      - {id: delete_forward,   keys: "fn+delete",       desc: "Forward delete", say: [xoá ký tự phía sau, forward delete]}
+      - {id: newline_no_send,  keys: "shift+return",    desc: "New line without sending (chat apps)", say: [xuống dòng, xuống hàng, new line]}
+
+  # ── Finder ─────────────────────────────────────────────────────────
+  - name: finder
+    bundles: [com.apple.finder]
+    shortcuts:
+      - {id: new_folder,     keys: "cmd+shift+n",  desc: "New folder", say: [thư mục mới, tạo thư mục mới, new folder], expect: window}
+      - {id: go_to_folder,   keys: "cmd+shift+g",  desc: "Go to Folder… dialog", say: [đi tới thư mục, go to folder]}
+      - {id: desktop,        keys: "cmd+shift+d",  desc: "Open Desktop", say: [mở desktop, mở màn hình nền, go to desktop], expect: window}
+      - {id: home,           keys: "cmd+shift+h",  desc: "Open Home folder", say: [mở thư mục home, thư mục người dùng, go home], expect: window}
+      - {id: downloads,      keys: "cmd+alt+l",    desc: "Open Downloads", say: [mở downloads, mở thư mục tải về, mở thư mục download, go to downloads], expect: window}
+      - {id: documents,      keys: "cmd+shift+o",  desc: "Open Documents", say: [mở documents, mở thư mục tài liệu, go to documents], expect: window}
+      - {id: applications,   keys: "cmd+shift+a",  desc: "Open Applications", say: [mở applications, mở thư mục ứng dụng, go to applications], expect: window}
+      - {id: utilities,      keys: "cmd+shift+u",  desc: "Open Utilities", say: [mở utilities, mở tiện ích, go to utilities], expect: window}
+      - {id: icloud,         keys: "cmd+shift+i",  desc: "Open iCloud Drive", say: [mở icloud drive, mở icloud, go to icloud], expect: window}
+      - {id: airdrop,        keys: "cmd+shift+r",  desc: "Open AirDrop", say: [mở airdrop, airdrop], expect: window}
+      - {id: recents,        keys: "cmd+shift+f",  desc: "Open Recents", say: [mở gần đây, file gần đây, recents], expect: window}
+      - {id: network,        keys: "cmd+shift+k",  desc: "Open Network", say: [mở mạng, network], expect: window}
+      - {id: get_info,       keys: "cmd+i",        desc: "Get Info of selection", say: [xem thông tin, thông tin file, get info]}
+      - {id: duplicate,      keys: "cmd+d",        desc: "Duplicate selection", say: [nhân bản, nhân đôi file, duplicate]}
+      - {id: make_alias,     keys: "ctrl+cmd+a",   desc: "Make alias", say: [tạo alias, tạo lối tắt, make alias]}
+      - {id: quick_look,     keys: "space",        desc: "Quick Look selection", say: [xem nhanh, quick look], when: no_text_focus}
+      - {id: show_hidden,    keys: "cmd+shift+.",  desc: "Show / hide hidden files", say: [hiện file ẩn, ẩn file ẩn, show hidden files]}
+      - {id: view_icons,     keys: "cmd+1",        desc: "View as icons", say: [xem dạng biểu tượng, view as icons]}
+      - {id: view_list,      keys: "cmd+2",        desc: "View as list", say: [xem dạng danh sách, view as list]}
+      - {id: view_columns,   keys: "cmd+3",        desc: "View as columns", say: [xem dạng cột, view as columns]}
+      - {id: view_gallery,   keys: "cmd+4",        desc: "View as gallery", say: [xem dạng thư viện, view as gallery]}
+      - {id: parent_folder,  keys: "cmd+up",       desc: "Open parent folder", say: [lên thư mục cha, thư mục cha, parent folder], expect: window}
+      - {id: open_selected,  keys: "cmd+down",     desc: "Open selected item", say: [mở mục đang chọn, open selection]}
+      - {id: back,           keys: "cmd+[",        desc: "Back", say: [quay lại, trở lại, back], expect: window}
+      - {id: forward,        keys: "cmd+]",        desc: "Forward", say: [tiến tới, forward], expect: window}
+      - {id: new_tab,        keys: "cmd+t",        desc: "New Finder tab", say: [tab mới, mở tab mới, new tab], expect: window}
+      - {id: new_window,     keys: "cmd+n",        desc: "New Finder window", say: [cửa sổ finder mới, new finder window], expect: window}
+      - {id: connect_server, keys: "cmd+k",        desc: "Connect to Server…", say: [kết nối máy chủ, connect to server]}
+      - {id: eject,          keys: "cmd+e",        desc: "Eject selected disk", say: [tháo ổ đĩa, eject], risk: medium}
+      - {id: path_bar,       keys: "cmd+alt+p",    desc: "Show / hide path bar", say: [hiện thanh đường dẫn, path bar]}
+      - {id: sidebar,        keys: "ctrl+cmd+s",   desc: "Show / hide sidebar", say: [hiện thanh bên, ẩn thanh bên, sidebar]}
+      - {id: move_to_trash,  keys: "cmd+delete",   desc: "Move selection to Trash", say: [chuyển vào thùng rác, bỏ vào thùng rác, move to trash], risk: high}
+      - {id: empty_trash,    keys: "cmd+shift+delete", desc: "Empty Trash (asks first)", say: [dọn sạch thùng rác, xoá thùng rác, empty trash], risk: critical}
+      - {id: move_here,      keys: "cmd+alt+v",    desc: "Move copied items here (after Cmd+C)", say: [di chuyển vào đây, move here]}
+      - {id: rename,         keys: "return",       desc: "Rename selected item", say: [đổi tên, rename], when: no_text_focus}
+
+  # ── Chromium browsers (Chrome, Edge, Brave, Arc…) ─────────────────
+  - name: chromium
+    bundles: ["@chromium"]
+    shortcuts:
+      - {id: new_tab,        keys: "cmd+t",        desc: "New tab", say: [tab mới, mở tab mới, new tab], expect: window}
+      - {id: close_tab,      keys: "cmd+w",        desc: "Close tab", say: [đóng tab, close tab], expect: window}
+      - {id: reopen_tab,     keys: "cmd+shift+t",  desc: "Reopen last closed tab", say: [mở lại tab vừa đóng, khôi phục tab, reopen tab], expect: window}
+      - {id: new_window,     keys: "cmd+n",        desc: "New window", say: [cửa sổ mới, new window], expect: window}
+      - {id: incognito,      keys: "cmd+shift+n",  desc: "New incognito window", say: [tab ẩn danh, cửa sổ ẩn danh, incognito], expect: window}
+      - {id: address_bar,    keys: "cmd+l",        desc: "Focus the address bar", say: [thanh địa chỉ, address bar, url bar]}
+      - {id: reload,         keys: "cmd+r",        desc: "Reload page", say: [làm mới, tải lại trang, refresh, reload]}
+      - {id: hard_reload,    keys: "cmd+shift+r",  desc: "Reload ignoring cache", say: [tải lại không cache, hard reload]}
+      - {id: back,           keys: "cmd+[",        desc: "Back", say: [quay lại, trang trước, back], expect: window}
+      - {id: forward,        keys: "cmd+]",        desc: "Forward", say: [tiến tới, trang sau, forward], expect: window}
+      - {id: next_tab,       keys: "cmd+alt+right", desc: "Next tab", say: [tab sau, tab tiếp theo, next tab], expect: window}
+      - {id: prev_tab,       keys: "cmd+alt+left", desc: "Previous tab", say: [tab trước, previous tab], expect: window}
+      - {id: tab_1,          keys: "cmd+1",        desc: "Go to first tab", say: [tab đầu tiên, tab 1, first tab], expect: window}
+      - {id: tab_2,          keys: "cmd+2",        desc: "Go to tab 2", say: [tab 2, tab thứ hai], expect: window}
+      - {id: tab_3,          keys: "cmd+3",        desc: "Go to tab 3", say: [tab 3, tab thứ ba], expect: window}
+      - {id: last_tab,       keys: "cmd+9",        desc: "Go to last tab", say: [tab cuối, tab cuối cùng, last tab], expect: window}
+      - {id: search_tabs,    keys: "cmd+shift+a",  desc: "Search open tabs", say: [tìm tab, tìm trong các tab, search tabs]}
+      - {id: find,           keys: "cmd+f",        desc: "Find in page", say: [tìm trong trang, find in page]}
+      - {id: downloads,      keys: "cmd+shift+j",  desc: "Downloads page", say: [mở trang tải xuống, xem file đã tải, downloads], expect: window}
+      - {id: history,        keys: "cmd+y",        desc: "History page", say: [lịch sử duyệt web, mở lịch sử, history], expect: window}
+      - {id: bookmarks_bar,  keys: "cmd+shift+b",  desc: "Show / hide bookmarks bar", say: [thanh dấu trang, bookmarks bar]}
+      - {id: bookmark_page,  keys: "cmd+d",        desc: "Bookmark this page", say: [lưu dấu trang, đánh dấu trang, bookmark]}
+      - {id: bookmark_manager, keys: "cmd+alt+b",  desc: "Bookmark manager", say: [quản lý dấu trang, bookmark manager], expect: window}
+      - {id: devtools,       keys: "cmd+alt+i",    desc: "Developer tools", say: [dev tools, công cụ nhà phát triển, devtools]}
+      - {id: js_console,     keys: "cmd+alt+j",    desc: "JavaScript console", say: [mở console, javascript console]}
+      - {id: view_source,    keys: "cmd+alt+u",    desc: "View page source", say: [xem mã nguồn trang, view source], expect: window}
+      - {id: save_page,      keys: "cmd+s",        desc: "Save page as…", say: [lưu trang web, save page]}
+      - {id: clear_data,     keys: "cmd+shift+delete", desc: "Clear browsing data dialog", say: [xoá dữ liệu duyệt web, clear browsing data], risk: medium}
+
+  # ── Safari ─────────────────────────────────────────────────────────
+  - name: safari
+    bundles: [com.apple.Safari]
+    shortcuts:
+      - {id: new_tab,        keys: "cmd+t",        desc: "New tab", say: [tab mới, mở tab mới, new tab], expect: window}
+      - {id: close_tab,      keys: "cmd+w",        desc: "Close tab", say: [đóng tab, close tab], expect: window}
+      - {id: reopen_tab,     keys: "cmd+shift+t",  desc: "Reopen last closed tab", say: [mở lại tab vừa đóng, reopen tab], expect: window}
+      - {id: address_bar,    keys: "cmd+l",        desc: "Focus the address bar", say: [thanh địa chỉ, address bar]}
+      - {id: reload,         keys: "cmd+r",        desc: "Reload page", say: [làm mới, tải lại trang, refresh, reload]}
+      - {id: back,           keys: "cmd+[",        desc: "Back", say: [quay lại, trang trước, back], expect: window}
+      - {id: forward,        keys: "cmd+]",        desc: "Forward", say: [tiến tới, trang sau, forward], expect: window}
+      - {id: next_tab,       keys: "cmd+shift+]",  desc: "Next tab", say: [tab sau, tab tiếp theo, next tab], expect: window}
+      - {id: prev_tab,       keys: "cmd+shift+[",  desc: "Previous tab", say: [tab trước, previous tab], expect: window}
+      - {id: all_tabs,       keys: "cmd+shift+\\", desc: "Show all tabs", say: [xem tất cả tab, show all tabs]}
+      - {id: downloads,      keys: "cmd+alt+l",    desc: "Show downloads", say: [xem file đã tải, downloads]}
+      - {id: history,        keys: "cmd+y",        desc: "Show history", say: [lịch sử duyệt web, mở lịch sử, history]}
+      - {id: reader,         keys: "cmd+shift+r",  desc: "Reader mode", say: [chế độ đọc, reader mode]}
+      - {id: private,        keys: "cmd+shift+n",  desc: "New private window", say: [cửa sổ riêng tư, tab ẩn danh, private window], expect: window}
+      - {id: bookmark_page,  keys: "cmd+d",        desc: "Add bookmark", say: [lưu dấu trang, đánh dấu trang, bookmark]}
+      - {id: find,           keys: "cmd+f",        desc: "Find in page", say: [tìm trong trang, find in page]}
+
+  # ── Gmail web (Gmail "keyboard shortcuts" setting must be ON) ──────
+  - name: gmail
+    bundles: ["@browser"]
+    url: mail.google.com
+    when: no_text_focus
+    shortcuts:
+      - {id: compose,       keys: "c",            desc: "Compose a new email", say: [soạn email, soạn thư mới, viết email mới, compose]}
+      - {id: reply,         keys: "r",            desc: "Reply", say: [trả lời email, reply]}
+      - {id: reply_all,     keys: "a",            desc: "Reply all", say: [trả lời tất cả, reply all]}
+      - {id: forward,       keys: "f",            desc: "Forward", say: [chuyển tiếp email, forward email]}
+      - {id: search,        keys: "/",            desc: "Focus Gmail search", say: [tìm email, tìm trong gmail, search mail]}
+      - {id: archive,       keys: "e",            desc: "Archive conversation", say: [lưu trữ email, archive]}
+      - {id: delete,        keys: "shift+3",      desc: "Delete conversation", say: [xoá email, xóa email này, delete email], risk: high}
+      - {id: newer,         keys: "k",            desc: "Newer conversation", say: [email mới hơn, newer email]}
+      - {id: older,         keys: "j",            desc: "Older conversation", say: [email cũ hơn, older email]}
+      - {id: mark_unread,   keys: "shift+u",      desc: "Mark as unread", say: [đánh dấu chưa đọc, mark unread]}
+      - {id: mark_read,     keys: "shift+i",      desc: "Mark as read", say: [đánh dấu đã đọc, mark read]}
+
+  - name: gmail_send
+    bundles: ["@browser"]
+    url: mail.google.com
+    shortcuts:
+      - {id: send, keys: "cmd+return", desc: "Send the email being composed", say: [gửi email, gửi thư, send email], risk: high}
+
+  # ── Apple Mail ─────────────────────────────────────────────────────
+  - name: mail
+    bundles: [com.apple.mail]
+    shortcuts:
+      - {id: new_message,   keys: "cmd+n",        desc: "New message", say: [soạn thư mới, soạn email, thư mới, new message], expect: window}
+      - {id: reply,         keys: "cmd+r",        desc: "Reply", say: [trả lời, trả lời thư, reply], expect: window}
+      - {id: reply_all,     keys: "cmd+shift+r",  desc: "Reply all", say: [trả lời tất cả, reply all], expect: window}
+      - {id: forward,       keys: "cmd+shift+f",  desc: "Forward", say: [chuyển tiếp, chuyển tiếp thư, forward], expect: window}
+      - {id: send,          keys: "cmd+shift+d",  desc: "Send the message", say: [gửi thư, gửi email, send], risk: high, expect: window}
+      - {id: get_mail,      keys: "cmd+shift+n",  desc: "Get new mail", say: [nhận thư mới, kiểm tra thư mới, get mail]}
+      - {id: search,        keys: "cmd+alt+f",    desc: "Search mailbox", say: [tìm thư, tìm email, search mail]}
+      - {id: attach,        keys: "cmd+shift+a",  desc: "Attach files…", say: [đính kèm file, attach file]}
+      - {id: toggle_unread, keys: "cmd+shift+u",  desc: "Mark read / unread", say: [đánh dấu chưa đọc, mark unread]}
+      - {id: delete,        keys: "cmd+delete",   desc: "Delete message", say: [xoá thư, xóa email, delete message], risk: high}
+
+  # ── Notes / Preview ────────────────────────────────────────────────
+  - name: notes
+    bundles: [com.apple.Notes]
+    shortcuts:
+      - {id: new_note,      keys: "cmd+n",        desc: "New note", say: [ghi chú mới, tạo ghi chú, new note]}
+      - {id: search,        keys: "cmd+alt+f",    desc: "Search all notes", say: [tìm ghi chú, search notes]}
+      - {id: checklist,     keys: "cmd+shift+l",  desc: "Checklist", say: [tạo checklist, danh sách việc cần làm, checklist], when: text_focus}
+
+  - name: preview
+    bundles: [com.apple.Preview]
+    shortcuts:
+      - {id: rotate_left,   keys: "cmd+l",        desc: "Rotate left", say: [xoay trái, rotate left]}
+      - {id: rotate_right,  keys: "cmd+r",        desc: "Rotate right", say: [xoay phải, rotate right]}
+      - {id: markup,        keys: "cmd+shift+a",  desc: "Show markup toolbar", say: [công cụ đánh dấu, markup]}
+
+  # ── Terminals ──────────────────────────────────────────────────────
+  - name: terminal
+    bundles: ["@terminal"]
+    shortcuts:
+      - {id: new_tab,       keys: "cmd+t",        desc: "New terminal tab", say: [tab mới, tab terminal mới, new tab], expect: window}
+      - {id: new_window,    keys: "cmd+n",        desc: "New terminal window", say: [cửa sổ terminal mới, new window], expect: window}
+      - {id: clear,         keys: "cmd+k",        desc: "Clear the screen", say: [xoá màn hình terminal, clear terminal, clear]}
+      - {id: interrupt,     keys: "ctrl+c",       desc: "Interrupt the running command", say: [dừng lệnh đang chạy, ngắt lệnh, interrupt]}
+
+  # ── Code editors (VS Code, Cursor) ─────────────────────────────────
+  - name: editor
+    bundles: ["@editor"]
+    shortcuts:
+      - {id: command_palette, keys: "cmd+shift+p", desc: "Command palette", say: [command palette, bảng lệnh]}
+      - {id: quick_open,    keys: "cmd+p",        desc: "Quick open file", say: [mở nhanh file, quick open]}
+      - {id: find_in_files, keys: "cmd+shift+f",  desc: "Search in all files", say: [tìm trong tất cả file, search in files]}
+      - {id: terminal,      keys: "ctrl+`",       desc: "Toggle integrated terminal", say: [mở terminal tích hợp, toggle terminal]}
+      - {id: sidebar,       keys: "cmd+b",        desc: "Toggle sidebar", say: [ẩn hiện thanh bên, toggle sidebar]}
+      - {id: comment,       keys: "cmd+/",        desc: "Toggle line comment", say: [comment dòng, toggle comment]}
+      - {id: format,        keys: "shift+alt+f",  desc: "Format document", say: [định dạng code, format document]}
+      - {id: go_to_line,    keys: "ctrl+g",       desc: "Go to line", say: [đi tới dòng, go to line]}
+      - {id: delete_line,   keys: "cmd+shift+k",  desc: "Delete line", say: [xoá dòng, xóa dòng, delete line]}
+      - {id: split_editor,  keys: "cmd+\\",       desc: "Split editor", say: [chia đôi trình soạn thảo, split editor]}
+      - {id: go_definition, keys: "f12",          desc: "Go to definition", say: [đi tới định nghĩa, go to definition]}
+
+  # ── Office / iWork ─────────────────────────────────────────────────
+  - name: office
+    bundles: ["@office"]
+    shortcuts:
+      - {id: bold,          keys: "cmd+b",        desc: "Bold", say: [in đậm, bold]}
+      - {id: italic,        keys: "cmd+i",        desc: "Italic", say: [in nghiêng, italic]}
+      - {id: underline,     keys: "cmd+u",        desc: "Underline", say: [gạch chân, underline]}
+      - {id: insert_link,   keys: "cmd+k",        desc: "Insert link", say: [chèn link, chèn liên kết, insert link]}
+
+  - name: excel
+    bundles: [com.microsoft.Excel]
+    shortcuts:
+      - {id: go_to,         keys: "ctrl+g",       desc: "Go to cell", say: [đi tới ô, go to cell]}
+      - {id: autosum,       keys: "cmd+shift+t",  desc: "AutoSum", say: [tự động tính tổng, autosum, tính tổng]}
+      - {id: fill_down,     keys: "cmd+d",        desc: "Fill down", say: [điền xuống, fill down]}
+      - {id: fill_right,    keys: "cmd+r",        desc: "Fill right", say: [điền sang phải, fill right]}
+      - {id: format_cells,  keys: "cmd+1",        desc: "Format cells", say: [định dạng ô, format cells]}
+      - {id: select_column, keys: "ctrl+space",   desc: "Select column", say: [chọn cột, select column]}
+      - {id: select_row,    keys: "shift+space",  desc: "Select row", say: [chọn hàng, chọn dòng, select row]}
+      - {id: insert_date,   keys: "ctrl+;",       desc: "Insert today's date", say: [chèn ngày hôm nay, insert date]}
+
+  # ── Chat apps ──────────────────────────────────────────────────────
+  - name: chat
+    bundles: ["@chat"]
+    shortcuts:
+      - {id: send,          keys: "return",       desc: "Send the typed message", say: [gửi tin nhắn, gửi tin, send message], risk: high}
+      - {id: newline,       keys: "shift+return", desc: "New line in the message box", say: [xuống dòng, new line]}
+      - {id: search,        keys: "cmd+f",        desc: "Search conversations", say: [tìm cuộc trò chuyện, tìm tin nhắn, search chat]}
+
+  - name: slack
+    bundles: [com.tinyspeck.slackmacgap]
+    shortcuts:
+      - {id: jump,          keys: "cmd+k",        desc: "Jump to a conversation", say: [chuyển cuộc trò chuyện, jump to]}
+      - {id: dms,           keys: "cmd+shift+k",  desc: "Direct messages", say: [tin nhắn riêng, direct messages]}
+      - {id: compose,       keys: "cmd+n",        desc: "Compose new message", say: [soạn tin mới, compose]}
+
+macros:
+  - id: finder_go_to
+    bundles: [com.apple.finder]
+    app: finder
+    say: ["đi tới thư mục {path}", "go to folder {path}", "vào thư mục {path}"]
+    param_rules: {path: "^[~/]"}
+    desc: "Finder: open a folder by path"
+    steps:
+      - {hotkey: "cmd+shift+g"}
+      - {wait: 0.6}
+      - {type: "{path}"}
+      - {wait: 0.3}
+      - {press: return}
+    expect: window
+
+  - id: spotlight_open
+    bundles: ["*"]
+    say: ["spotlight {query}", "mở spotlight tìm {query}", "tìm bằng spotlight {query}"]
+    desc: "Open something through Spotlight"
+    steps:
+      - {hotkey: "cmd+space"}
+      - {wait: 0.5}
+      - {type: "{query}"}
+      - {wait: 0.8}
+      - {press: return}
+    expect: app
+
+  - id: find_in_page
+    bundles: ["*"]
+    say: ["tìm trong trang {text}", "tìm chữ {text} trên trang", "find on page {text}", "tìm từ {text} trong trang"]
+    desc: "Find text in the current page/document"
+    steps:
+      - {hotkey: "cmd+f"}
+      - {wait: 0.4}
+      - {type: "{text}"}
+      - {press: return}
+
+  - id: switch_tab
+    bundles: ["@chromium"]
+    app: chrome
+    say: ["chuyển sang tab {title}", "chuyển tab {title}", "switch to tab {title}", "mở tab {title} đang mở"]
+    desc: "Chrome: jump to an open tab by title"
+    steps:
+      - {hotkey: "cmd+shift+a"}
+      - {wait: 0.6}
+      - {type: "{title}"}
+      - {wait: 0.5}
+      - {press: return}
+    expect: window
+
+  - id: copy_all
+    bundles: ["*"]
+    say: ["copy toàn bộ", "sao chép toàn bộ", "copy tất cả", "sao chép tất cả nội dung", "copy all"]
+    desc: "Select all and copy"
+    steps:
+      - {hotkey: "cmd+a"}
+      - {hotkey: "cmd+c"}
+      - {read_clipboard: true}
+    expect: clipboard
+
+  - id: read_selection
+    bundles: ["*"]
+    say: ["đọc đoạn đang chọn", "lấy đoạn đang chọn", "copy đoạn đang chọn", "read selection"]
+    desc: "Copy the current selection and return its text"
+    steps:
+      - {hotkey: "cmd+c"}
+      - {read_clipboard: true}
+    expect: clipboard
+
+  - id: export_pdf
+    bundles: ["*"]
+    say: ["xuất pdf", "xuất ra pdf", "xuất file pdf", "export pdf", "export as pdf", "lưu thành pdf"]
+    desc: "Export the document as PDF through the File menu"
+    steps:
+      - {menu: [[File, Export as PDF…], [Tệp, Xuất dưới dạng PDF…], [File, Export to, PDF…], [Tệp, Xuất sang, PDF…]]}

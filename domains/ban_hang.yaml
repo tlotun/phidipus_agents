@@ -1,0 +1,105 @@
+# domains/ban_hang.yaml
+# Phidipus AI Forge — Domain: Bán hàng & Marketing
+# ══════════════════════════════════════════════════
+
+domain:
+  name: "bán hàng và marketing"
+  display_name: "Sales & Marketing Chatbot"
+  model_size: "1.7b"          # anchor: 4b, deploy: 1.7b, lite: 0.6b
+  language: "vi"
+  version: "1.0"
+
+data_sources:
+  youtube_keywords:
+    - "kỹ năng bán hàng việt nam"
+    - "chốt sale hiệu quả"
+    - "xử lý từ chối khách hàng"
+    - "tâm lý khách hàng việt nam"
+    - "kỹ năng thuyết phục khách hàng"
+    - "bán hàng online việt nam"
+    - "upsell cross-sell kỹ năng"
+    - "customer service tiếng việt"
+  youtube_max_videos: 30
+
+  huggingface_datasets:
+    - "thu-coai/DialogStitch"
+    - "HuggingFaceH4/ultrachat_200k"
+
+  pdf_sources: []             # Thêm path PDF sách bán hàng nếu có
+
+insight_extraction:
+  situation_types:
+    - "price_objection"           # Khách chê giá cao
+    - "customer_silent"           # Khách im lặng sau báo giá
+    - "competitor_comparison"     # Khách so sánh đối thủ
+    - "need_to_think"             # Khách cần suy nghĩ thêm
+    - "ask_family"                # Khách cần hỏi ý kiến gia đình
+    - "not_interested"            # Khách nói không quan tâm
+    - "urgent_close"              # Cần chốt gấp
+    - "first_contact"             # Tiếp cận lần đầu
+    - "follow_up"                 # Follow-up sau demo
+    - "complaint_handling"        # Xử lý khiếu nại
+    - "upsell_opportunity"        # Cơ hội upsell
+    - "budget_constraint"         # Khách nói hết ngân sách
+  extra_prompt: |
+    Tập trung vào tâm lý khách hàng Việt Nam:
+    - Tính sĩ diện / mặt mũi khi từ chối
+    - Coi trọng quan hệ cá nhân trước khi mua
+    - Hỏi giá ngay câu đầu (reflex văn hóa)
+    - Cần tham khảo gia đình / đồng nghiệp trước quyết định lớn
+
+dataset:
+  target_samples: 700
+  distribution:
+    positive: 0.60      # ~420 samples: tình huống + xử lý tốt
+    refusal: 0.12       # ~84 samples: từ chối bịa đặt (≥80 bắt buộc)
+    contrastive: 0.15   # ~105 samples: so sánh đúng vs sai
+    recovery: 0.08      # ~56 samples: xử lý khi mắc lỗi
+    edge_case: 0.05     # ~35 samples: OOD / edge cases
+  max_synthetic_ratio: 0.30  # Tối đa 30% synthetic data
+
+  persona: |
+    Bạn là chuyên viên tư vấn bán hàng chuyên nghiệp, nhiệt tình và am hiểu
+    tâm lý khách hàng Việt Nam. Bạn không bao giờ ép buộc mà luôn giúp khách
+    tìm ra giải pháp phù hợp nhất.
+
+  refusal_rules:
+    - "Không bao giờ báo giá cụ thể khi chưa hiểu nhu cầu khách"
+    - "Không hứa hẹn delivery date chính xác khi chưa kiểm tra"
+    - "Không so sánh trực tiếp nói xấu đối thủ cạnh tranh"
+    - "Không cam kết discount khi chưa được phép từ quản lý"
+    - "Không bịa tồn kho / số lượng sản phẩm còn lại"
+    - "Không đưa ra số liệu ROI không có cơ sở"
+
+training:
+  anchor_model: "Qwen/Qwen3-4B"
+  anchor_iters: 600
+  deploy_model: "Qwen/Qwen3-1.7B"
+  deploy_iters: 400
+  lite_model: "Qwen/Qwen3-0.6B"
+  lite_iters: 300
+  learning_rate: 1.0e-5
+  lora_rank: 16
+  save_every: 100
+
+rag:
+  frameworks:
+    - "SPIN"
+    - "AIDA"
+    - "4P"
+    - "FEEL_FELT_FOUND"
+    - "VN_GIA_REF"        # Reflex hỏi giá VN
+    - "VN_GIA_DINH"       # Tham khảo gia đình
+    - "VN_MAT_MAT"        # Mặt mũi / sĩ diện
+    - "VN_NIỀM_TIN"       # Xây dựng niềm tin quan hệ
+  similarity_threshold: 0.60
+  top_k: 3
+
+evaluation:
+  min_accuracy: 0.90
+  min_refusal_rate: 0.95
+  hallucinate_allowed: 0.00   # Không được phép hallucinate dù 1 lần
+
+ollama:
+  model_name: "sales-assistant-1.7b"
+  modelfile_template: "Modelfile.sales"

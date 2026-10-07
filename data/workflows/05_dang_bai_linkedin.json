@@ -1,0 +1,127 @@
+{
+  "id": "wf_linkedin_post",
+  "brain_name": "dang_bai_linkedin",
+  "name": "💼 Đăng bài LinkedIn",
+  "trigger_phrases": [
+    "đăng linkedin",
+    "post linkedin",
+    "viết bài linkedin"
+  ],
+  "nodes": [
+    {
+      "id": "n_1",
+      "type": "trigger",
+      "x": 60,
+      "y": 40,
+      "config": {
+        "phrases": [
+          "đăng linkedin",
+          "post linkedin",
+          "viết bài linkedin"
+        ],
+        "description": "AI viết bài → mở LinkedIn → paste → đăng"
+      },
+      "next": [
+        "n_2"
+      ]
+    },
+    {
+      "id": "n_2",
+      "type": "ai_process",
+      "x": 60,
+      "y": 130,
+      "config": {
+        "action": "custom_prompt",
+        "model": "auto",
+        "prompt": "Viết 1 bài đăng LinkedIn chuyên nghiệp về chủ đề: {{topic}}\n\nYêu cầu:\n- 150-250 từ\n- Giọng chuyên gia, chia sẻ insight\n- Có hook mở đầu thu hút\n- Có CTA cuối bài\n- 3-5 hashtag liên quan\n- Có emoji phù hợp",
+        "input_from": "none",
+        "language": "vi",
+        "max_tokens": 400,
+        "save_result": true
+      },
+      "next": [
+        "n_3"
+      ]
+    },
+    {
+      "id": "n_3",
+      "type": "chrome",
+      "x": 60,
+      "y": 220,
+      "config": {
+        "action": "navigate",
+        "url": "https://www.linkedin.com/feed/",
+        "wait_after": 3
+      },
+      "next": [
+        "n_4"
+      ]
+    },
+    {
+      "id": "n_4",
+      "type": "vision_click",
+      "x": 60,
+      "y": 310,
+      "config": {
+        "description": "Nút Start a post hoặc ô Bắt đầu bài đăng",
+        "domain": "linkedin.com",
+        "action_key": "linkedin_start_post",
+        "retry": 2,
+        "wait_after": 2
+      },
+      "next": [
+        "n_5"
+      ]
+    },
+    {
+      "id": "n_5",
+      "type": "wait",
+      "x": 60,
+      "y": 400,
+      "config": {
+        "seconds": 2,
+        "timeout": 10
+      },
+      "next": [
+        "n_6"
+      ]
+    },
+    {
+      "id": "n_6",
+      "type": "type_text",
+      "x": 60,
+      "y": 490,
+      "config": {
+        "text": "{{result}}",
+        "use_clipboard": true
+      },
+      "next": [
+        "n_7"
+      ]
+    },
+    {
+      "id": "n_7",
+      "type": "screenshot",
+      "x": 60,
+      "y": 580,
+      "config": {
+        "send_telegram": true
+      },
+      "next": [
+        "n_8"
+      ]
+    },
+    {
+      "id": "n_8",
+      "type": "notify",
+      "x": 60,
+      "y": 670,
+      "config": {
+        "message": "💼 Bài LinkedIn đã soạn!\nKiểm tra và bấm Post khi sẵn sàng."
+      },
+      "next": []
+    }
+  ],
+  "created": "2026-03-26T01:07:07.566896",
+  "active": true
+}

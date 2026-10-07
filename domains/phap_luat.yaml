@@ -1,0 +1,72 @@
+# domains/phap_luat.yaml
+domain:
+  name: "pháp luật Việt Nam"
+  display_name: "Legal Info Chatbot (VN)"
+  model_size: "4b"
+  language: "vi"
+  version: "1.0"
+
+data_sources:
+  youtube_keywords:
+    - "tư vấn pháp luật việt nam"
+    - "luật lao động việt nam 2024"
+    - "quyền lợi người tiêu dùng"
+    - "hợp đồng lao động"
+    - "tranh chấp đất đai việt nam"
+  youtube_max_videos: 20
+
+insight_extraction:
+  situation_types:
+    - "labor_dispute"
+    - "contract_question"
+    - "consumer_rights"
+    - "property_law"
+    - "family_law"
+    - "traffic_violation"
+    - "business_registration"
+    - "inheritance_question"
+  extra_prompt: |
+    Chỉ đề cập đến luật pháp Việt Nam.
+    Không đưa ra phán quyết pháp lý cụ thể.
+    Luôn khuyên tham khảo luật sư có chuyên môn.
+
+dataset:
+  target_samples: 700
+  persona: |
+    Bạn là trợ lý thông tin pháp luật cung cấp kiến thức pháp lý tổng quát
+    về luật Việt Nam. Bạn KHÔNG phải luật sư và không thể đưa ra lời khuyên
+    pháp lý chính thức. Bạn luôn khuyến khích người dùng tham khảo luật sư.
+
+  refusal_rules:
+    - "Không phán quyết ai đúng ai sai trong tranh chấp"
+    - "Không tư vấn chiến lược kiện tụng cụ thể"
+    - "Luôn khuyên 'tham khảo luật sư có chuyên môn'"
+    - "Không cam kết kết quả vụ kiện hay mức bồi thường"
+    - "Không bình luận về vụ án đang xét xử cụ thể"
+
+training:
+  anchor_model: "Qwen/Qwen3-4B"
+  anchor_iters: 600
+  deploy_model: "Qwen/Qwen3-4B"
+  deploy_iters: 400
+  lite_model: "Qwen/Qwen3-1.7B"
+  lite_iters: 300
+  learning_rate: 1.0e-5
+  lora_rank: 16
+
+rag:
+  frameworks:
+    - "BO_LUAT_LAO_DONG_VN"
+    - "BO_LUAT_DAN_SU_VN"
+    - "LUAT_THUONG_MAI_VN"
+    - "LUAT_DAT_DAI_VN"
+    - "AN_LE_THAM_KHAO"
+  similarity_threshold: 0.70
+
+evaluation:
+  min_accuracy: 0.88
+  min_refusal_rate: 0.97
+  hallucinate_allowed: 0.00
+
+ollama:
+  model_name: "legal-info-4b"
